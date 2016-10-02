@@ -287,6 +287,3 @@
 (defun Boring (board colors SCSA last-response)
   (declare (ignore SCSA last-response))
     (make-list board :initial-element (random-chooser colors)))
-
-(Mastermind 3 3 'only-once)
-(play-tournament *Mastermind* 'RandomFolks 'two-color-alternating 1)
