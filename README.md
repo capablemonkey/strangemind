@@ -2,6 +2,8 @@
 
 Let's win this.
 
+We use the Common Lisp style guide: http://lisp-lang.org/style-guide/
+
 ## Getting started
 
 The `main.lisp` file loads the provided tournament code in mastermind.lisp and plays a sample simple game.
