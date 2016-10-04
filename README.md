@@ -13,3 +13,27 @@ If you use sbcl do:
 ```
 sbcl --load main.lisp
 ```
+
+## Testing
+
+We use [prove](https://github.com/fukamachi/prove).  Make sure you install `prove` using Quicklisp, a Common Lisp package manager.
+
+Don't have Quicklisp?  Install it here: https://www.quicklisp.org/beta/
+
+Once installed, remember to configure Quicklisp to auto-load itself:
+
+```
+(ql:add-to-init-file)
+```
+
+Then install prove:
+
+```
+(ql:quickload :prove)
+```
+
+To run tests, do this from the repo root directory:
+
+```
+sbcl --noinform --load test/index.lisp --eval '(quit)'
+```
