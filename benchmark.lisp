@@ -14,10 +14,11 @@
     two-color
     ab-color
     two-color-alternating
-    only-once
     first-and-last
     usually-fewer
-    prefer-fewer))
+    prefer-fewer
+    ; only-once ; WARNING: this SCSA requires the board size to equal the number of colors
+    ))
 
 (defun random-scsa ()
   (nth (random (length *SCSA-list*)) *SCSA-list*))
@@ -53,13 +54,12 @@
 ; TODO: Benchmark against colors
 ; TODO: Benchmark against SCSAs
 
-; keeping colors fixed at 8, benchmark against board size:
+; keeping colors fixed at 6, benchmark against board size:
 (defun benchmark-boards (team min-size max-size)
-  (loop for pegs from min-size to max-size
-    do
-    (Mastermind pegs 10 NIL)
-    (format t "~%*** Benchmark against board with ~a pegs:" pegs)
-    (benchmark-tournament team 100)
-    ))
+  (let ((colors 6))
+    (loop for pegs from min-size to max-size do
+      (Mastermind pegs colors NIL)
+      (format t "~%*** Benchmark against board with ~a colors and ~a pegs:" colors pegs)
+      (benchmark-tournament team 100))))
 
 (benchmark-boards 'RandomFolks 3 10)
