@@ -55,11 +55,11 @@
 ; TODO: Benchmark against SCSAs
 
 ; keeping colors fixed at 6, benchmark against board size:
-(defun benchmark-boards (team min-size max-size)
+(defun benchmark-pegs (team min-size max-size)
   (let ((colors 6))
     (loop for pegs from min-size to max-size do
       (Mastermind pegs colors NIL)
       (format t "~%*** Benchmark against board with ~a colors and ~a pegs:" colors pegs)
       (benchmark-tournament team 100))))
 
-(benchmark-boards 'RandomFolks 3 10)
+(benchmark-pegs 'RandomFolks 3 10)
