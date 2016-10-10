@@ -141,12 +141,12 @@
      for response = (respond-to-guess self guess i)
      for win = (equal (first response) 'win)
      for time-is-up = (> (get-internal-run-time) stop-time)
-     do (print (list (get-internal-run-time) stop-time))
-     when win
-     do (format t "~%Win. Round over.")
-     else when response
-     do (format t "~%score ~a" response)
-     else do (format t "~%Invalid entry. Round over.")
+     ; do (print (list (get-internal-run-time) stop-time))
+     ; when win
+     ; do (format t "~%Win. Round over.")
+     ; else when response
+     ; do (format t "~%score ~a" response)
+     ; else do (format t "~%Invalid entry. Round over.")
      until (or win (null response) (= i game-cutoff) time-is-up)
      finally (return (cond (time-is-up '(0 0))
          ((null response) nil)
@@ -163,7 +163,7 @@
 ;will run your team-name against a different set of freshly-generated codes every time, and help you do performance evaluation
 ;WARNING: if you use method 1, be sure you generate enough boards for your call to play-tournament (e.g., at least 25 here)
 (defmethod play-tournament ((self game) team argument number-of-games)
-  (declare (special *Mastermind*)) (print team)
+  (declare (special *Mastermind*)) ;(print team)
   (loop with wins = 0
      with failures = 0
      with rounds = 0
@@ -177,7 +177,7 @@
      else when (null round)
      do (incf failures) 
      else do (incf rounds)
-     finally (print (list 'score (scoring-function (list wins rounds failures))))
+     finally ;(print (list 'score (scoring-function (list wins rounds failures))))
        (return (list wins rounds failures))))
 
 ;you get 5 points for a full win and -2 for every round that ended in an invalid guess
