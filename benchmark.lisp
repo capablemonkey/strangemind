@@ -5,20 +5,31 @@
 ; Make sure we're setting a new random state for the PRNG:
 (setf *random-state* (make-random-state t))
 
+; Support functions
 (defun average (list)
   (/ (reduce #'+ list) (float (list-length list))))
 
+(defparameter *SCSA-list*
+  '(insert-colors
+    two-color
+    ab-color
+    two-color-alternating
+    only-once
+    first-and-last
+    usually-fewer
+    prefer-fewer))
+
+(defun random-scsa ()
+  (nth (random (length *SCSA-list*)) *SCSA-list*))
+
 ; tournament return value is (<accumulated score>, <rounds lost>, <rounds failed>)
 
+; benchmark team against a tournament 100 times against random SCSAs:
 (defun benchmark-tournament (team trials)
-  ; TODO: add list of SCSAs and apply one at random for each trial...
-
-  (Mastermind 3 3 'only-once)
-
   (let*
     ((results ; return values from running tournaments
       (mapcar
-        (lambda (_) (play-tournament *Mastermind* team 'two-color-alternating 100))
+        (lambda (_) (play-tournament *Mastermind* team (random-scsa) 100))
         (make-list trials)))
       (scores (mapcar #'first results))
       (games-lost (mapcar #'second results))
@@ -33,11 +44,22 @@
     (format t "~%Total games with invalid guesses (!): ~a" total-failed)
     (format t "~%Average score: ~a" average-score)
     ; (print results)
+    results
     ))
 
 ; Run the tournament 10 times and calculate statistics on performance of team:
-(benchmark-tournament 'RandomFolks 10)
+; (benchmark-tournament 'RandomFolks 10)
 
-; TODO: Benchmark against board size
 ; TODO: Benchmark against colors
 ; TODO: Benchmark against SCSAs
+
+; keeping colors fixed at 8, benchmark against board size:
+(defun benchmark-boards (team min-size max-size)
+  (loop for pegs from min-size to max-size
+    do
+    (Mastermind pegs 10 NIL)
+    (format t "~%*** Benchmark against board with ~a pegs:" pegs)
+    (benchmark-tournament team 100)
+    ))
+
+(benchmark-boards 'RandomFolks 3 10)
