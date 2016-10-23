@@ -30,9 +30,13 @@
 (defun possible-codes (board colors)
   (k-permutations-with-repetition colors board))
 
-; TODO: make this scale based on board size.  currently support 4 pegs only
 (defun first-guess (board colors)
-  (list (first colors) (first colors) (second colors) (second colors)))
+  (loop
+    for i from 1 to board
+    when (<= i (/ board 2))
+    collect (first colors)
+    else
+    collect (second colors)))
 
 (defun my-color-counter (number-of-colors list)
   (loop with tally = (make-array number-of-colors :initial-element 0)
