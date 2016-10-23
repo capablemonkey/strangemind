@@ -52,14 +52,15 @@
 ; (benchmark-tournament 'RandomFolks 10)
 
 ; TODO: Benchmark against SCSAs
+; TODO: add timing stats per round
 
 ; keeping colors fixed at 6, benchmark against board size:
 (defun benchmark-pegs (team min-size max-size)
   (let ((colors 6))
     (loop for pegs from min-size to max-size do
       (Mastermind pegs colors NIL)
-      (format t "~%*** Benchmark against board with ~a colors and ~a pegs:" colors pegs)
-      (benchmark-tournament team 100))))
+      (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
+      (benchmark-tournament team 2))))
 
 ; keeping pegs fixed at 4, benchmark against colors:
 
@@ -67,8 +68,10 @@
   (let ((pegs 4))
     (loop for colors from min-colors to max-colors do
       (Mastermind pegs colors NIL)
-      (format t "~%*** Benchmark against board with ~a colors and ~a pegs:" colors pegs)
-      (benchmark-tournament team 100))))
+      (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
+      (benchmark-tournament team 2))))
 
-(benchmark-pegs 'RandomFolks 3 10)
-(benchmark-colors 'RandomFolks 6 12)
+(benchmark-pegs 'RandomFolks 3 5)
+(benchmark-pegs 'Knuth 3 5)
+; (benchmark-colors 'RandomFolks 6 8)
+; (benchmark-colors 'Knuth 9 10)

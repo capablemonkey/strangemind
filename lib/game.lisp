@@ -141,10 +141,11 @@
      for response = (respond-to-guess self guess i)
      for win = (equal (first response) 'win)
      for time-is-up = (> (get-internal-run-time) stop-time)
-     do (format t "~%[~a] Guess: ~a | Response: ~a" i guess response)
+     ; do (format t "~%[~a] Guess: ~a | Response: ~a" i guess response)
      ; do (print (list (get-internal-run-time) stop-time))
-     when win
-     do (format t "~%Win. Round over.")
+     ; do (format t "~% Time took for guess: ~a" (- ))
+     ; when win
+     ; do (format t "~%Win. Round over.")
      ; else when response
      ; do (format t "~%score ~a" response)
      ; else do (format t "~%Invalid entry. Round over.")

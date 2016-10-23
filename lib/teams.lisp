@@ -97,6 +97,8 @@
     (push (first-guess board colors) *knuth-past-guesses*)
     (return-from Knuth (first-guess board colors)))
 
+  ; (format t "~%Number of remaining codes: ~a" (length *knuth-remaining-codes*))
+
   ; remove from possible codes the codes which would not have generated this response for the last guess
   (setf *knuth-remaining-codes*
     (remove-if-not
@@ -110,8 +112,6 @@
           (firstn 2 last-response)
           (my-process-guess (length colors) code (first *knuth-past-guesses*))))
       *knuth-remaining-codes*))
-
-  ; (print (length *knuth-remaining-codes*))
 
   (let*
     ; list of tuples (<guess> <score of guess>)
