@@ -9,3 +9,4 @@
 
 (load "test/game.lisp")
 (load "test/scsa.lisp")
+(load "test/genetic.lisp")

@@ -1,4 +1,5 @@
-(load "lib/knuth.lisp")
+(load (merge-pathnames "knuth.lisp" *load-truename*))
+(load (merge-pathnames "genetic.lisp" *load-truename*))
 
 ;;;*******************************************************************************************
 ;;Sample teams
