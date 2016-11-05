@@ -2,6 +2,7 @@
 (defvar *responses* nil)
 
 (defparameter *population-size* 10)
+(defparameter *mutation-rate* 0.05)
 (defvar *population* nil)
 
 (defun first-guess (board colors)
@@ -39,7 +40,7 @@
         for parent-a = (random-selection *population* guesses responses)
         for parent-b = (random-selection *population* guesses responses)
         for child = (reproduce parent-a parent-b)
-        for possibly-mutated-child = (mutate-with-chance child 0.05)
+        for possibly-mutated-child = (mutate-with-chance child *mutation-rate*)
         collect possibly-mutated-child)))
     (setf *population* new-population)
 
