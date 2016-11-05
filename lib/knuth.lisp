@@ -26,13 +26,13 @@
 (defun maximum (list)
   (loop for element in list maximizing element))
 
-(defun score-guess (number-of-colors guess remaining-codes)
+(defun score-guess (colors guess remaining-codes)
   (let
     ((tally (make-hash-table))
     (max-hit 0))
     (loop
       for code in remaining-codes
-      for response = (my-process-guess number-of-colors code guess)
+      for response = (my-process-guess colors code guess)
       do
       (setf (gethash response tally) (+ 1 (gethash response tally 0))))
 
@@ -62,7 +62,7 @@
         ;   (firstn 2 last-response))
         (equal
           (firstn 2 last-response)
-          (my-process-guess (length colors) code (first *knuth-past-guesses*))))
+          (my-process-guess colors code (first *knuth-past-guesses*))))
       *knuth-remaining-codes*))
 
   (let*
@@ -70,7 +70,7 @@
     ((poss-guesses-with-scores
       (mapcar
         (lambda (guess)
-            (list guess (score-guess (length colors) guess *knuth-remaining-codes*)))
+            (list guess (score-guess colors guess *knuth-remaining-codes*)))
         ; TODO: use set of all possible codes instead of remaining codes because
         ; the ideal guess may not be one of the remaining codes.
         *knuth-remaining-codes*))
