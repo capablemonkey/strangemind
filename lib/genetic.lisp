@@ -17,10 +17,15 @@
   (loop for i from 1 to *population-size*
     collect (insert-colors board colors)))
 
-(defun fitness (individual guesses responses)
-  "Determines fitness of individual based on how consistent it is with past guesses and responses")
+(defun fitness (individual colors guesses responses)
+  "Determines fitness of individual based on how consistent it is with past guesses and responses"
+  ; For now, just a count of how many guess-response pairs it matches
+  (loop for guess in guesses
+    for response in responses
+    when (equal response (my-process-guess colors individual guess))
+    sum 1))
 
-(defun random-selection (population guesses responses)
+(defun random-selection (population colors guesses responses)
   "Chooses a individual from the population with a bias for fitness")
 
 (defun reproduce (parent-a parent-b)
@@ -32,13 +37,13 @@
 (defun mutate-with-chance (individual chance)
   "Choose to mutate the individual based on some probability")
 
-(defun genetic-algorithm (guesses responses)
+(defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
   (let
     ((new-population
       (loop for _ in *population*
-        for parent-a = (random-selection *population* guesses responses)
-        for parent-b = (random-selection *population* guesses responses)
+        for parent-a = (random-selection *population* colors guesses responses)
+        for parent-b = (random-selection *population* colors guesses responses)
         for child = (reproduce parent-a parent-b)
         for possibly-mutated-child = (mutate-with-chance child *mutation-rate*)
         collect possibly-mutated-child)))
@@ -63,7 +68,6 @@
   ; record last response
   (push last-response *responses*)
 
-  (let ((guess (genetic-algorithm *guesses* *responses*)))
+  (let ((guess (genetic-algorithm colors *guesses* *responses*)))
     (push guess *guesses*)
     guess))
-  
