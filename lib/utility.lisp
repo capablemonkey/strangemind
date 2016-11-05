@@ -27,9 +27,24 @@
      do (incf exact-counter)
      and do (decf (aref guess-color-count (spot entry)))
      and do (decf (aref true-color-count (spot entry)))
-     finally (return (list exact-counter (loop for i from 0 to (1- (length colors))
+     finally (return (list exact-counter (loop for i from 0 to (1- (length colors))))
               for guessed = (aref true-color-count i)
               for true = (aref guess-color-count i)
               when (<= true guessed)
               sum true
-              else sum guessed)))))
+              else sum guessed)))
+
+; Usage:
+; (setf *random-state* (make-random-state t))
+; (print (pick-with-probability '((a 0.45) (b 0.10) (c 0.15) (d 0.30))))
+(defun pick-with-probability (items-with-probabilties)
+  "Weighted random choice from a list of tuples (item probability)"
+  (let ((random-number (random 1.0)))
+    (loop
+      for tuple in items-with-probabilties
+      for probability = (second tuple)
+      summing probability into running-sum
+      ; do (format t "~%sum so far: ~a" running-sum)
+      ; do (format t "~%random: ~a" random-number)
+      when (>= running-sum random-number)
+      do (return-from pick-with-probability (first tuple)))))
