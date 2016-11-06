@@ -9,7 +9,8 @@
 
 (setf (answer *Mastermind*) (insert-colors (board *Mastermind*) (colors *Mastermind*)))
 
-(play-round *Mastermind* 'Knuth)
+; (play-round *Mastermind* 'Knuth)
+(play-round *Mastermind* 'Genetic)
 
 ; (play-tournament *Mastermind* 'RandomFolks 'two-color-alternating 100)
 ; (play-tournament *Mastermind* 'Knuth 'two-color-alternating 100)
