@@ -27,4 +27,5 @@ before_script:
 # to do unit testing; other frameworks will have different ways of
 # determining whether a test suite fails or succeeds.
 script:
-  - cl -f test/index.lisp -e '(cl-user::quit)'
+  - cl -f benchmark.lisp -e '(cl-user::quit)'
+  - cl -f test/index.lisp

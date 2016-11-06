@@ -1,6 +1,7 @@
-(load "lib/game.lisp")
-(load "lib/scsa.lisp")
-(load "lib/teams.lisp")
+(load (merge-pathnames "lib/game.lisp" *load-truename*))
+(load (merge-pathnames "lib/utility.lisp" *load-truename*))
+(load (merge-pathnames "lib/scsa.lisp" *load-truename*))
+(load (merge-pathnames "lib/teams.lisp" *load-truename*))
 
 ; Make sure we're setting a new random state for the PRNG:
 (setf *random-state* (make-random-state t))
