@@ -32,6 +32,20 @@
         '((A A A A) (B B B B) (G G G G))
         '((1 1) (1 1) (1 1)))))
 
+  (is
+    4
+    (length (reproduce '(A A A A) '(F F F F)))
+    "reproduce returns offspring of the correct length")
+
+  (ok
+    (let ((child (reproduce '(A B C D) '(E F G H))))
+      (print child)
+      (or
+        (equal child '(A F G H))
+        (equal child '(A B G H))
+        (equal child '(A B C H))))
+    "reproduce returns a valid child")
+
   (let
     ; set some values to re-use in our tests:
     (

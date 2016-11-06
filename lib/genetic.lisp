@@ -45,12 +45,18 @@
   "Chooses a individual from the population with a bias for fitness"
   (pick-with-probability (population-by-relative-fitness population colors guesses responses)))
 
+; TODO: We may want to tweak the crossover point as time goes on
 (defun reproduce (parent-a parent-b)
-  "Returns a single individual offspring from two individuals")
+  "Returns a single individual offspring from two individuals"
+  (let ((crossover-index (1+ (random (1- (length parent-a))))))
+    (append
+      (subseq parent-a 0 crossover-index)
+      (subseq parent-b crossover-index (length parent-b)))))
 
 (defun mutate (individual)
   "Mutate the individual")
 
+; TODO: we may want the mutation rate to decrease with time, similar to simulated annealing
 (defun mutate-with-chance (individual chance)
   "Choose to mutate the individual based on some probability")
 
@@ -59,6 +65,7 @@
   (let
     ((new-population
       (loop for _ in *population*
+        ; TODO: should we allow parents to be identical/self?
         for parent-a = (random-selection *population* colors guesses responses)
         for parent-b = (random-selection *population* colors guesses responses)
         for child = (reproduce parent-a parent-b)
