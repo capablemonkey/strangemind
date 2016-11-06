@@ -3,7 +3,7 @@
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
-(defparameter *population-size* 10)
+(defparameter *population-size* 200)
 (defparameter *mutation-rate* 0.05)
 (defvar *population* nil)
 
@@ -80,6 +80,7 @@
 
 (defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
+  (print *population*)
   (let
     ((new-population
       (loop for _ in *population*

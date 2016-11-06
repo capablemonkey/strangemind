@@ -4,6 +4,9 @@
   (is 'a (pick-with-probability '((a 1)))
     "pick-with-probability returns an item from a given tuple list")
 
+  (is 'a (pick-with-probability '((a 0.00)))
+    "pick-with-probability returns an item even if all items have 0 probability")
+
   (is '(A B X D) (set-nth '(A B C D) 2 'X)
     "set-nth works as expected")
 

@@ -84,10 +84,11 @@
       for tuple in items-with-probabilties
       for probability = (second tuple)
       summing probability into running-sum
-      ; do (format t "~%sum so far: ~a" running-sum)
-      ; do (format t "~%random: ~a" random-number)
       when (>= running-sum random-number)
-      do (return-from pick-with-probability (first tuple)))))
+      do (return-from pick-with-probability (first tuple))
+
+      ; if probability threshold never met, always pick something:
+      finally (return-from pick-with-probability (first tuple)))))
 
 (defun set-nth (list n val)
   "Return a copy of list where the nth element is val"
