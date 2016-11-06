@@ -39,3 +39,9 @@ To run tests, do this from the repo root directory:
 ```
 sbcl --noinform --load test/index.lisp --eval '(quit)'
 ```
+
+## Benchmarking
+
+```
+sbcl --load benchmark.lisp
+```
