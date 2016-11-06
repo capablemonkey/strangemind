@@ -27,19 +27,29 @@
     when (equal response (my-process-guess colors individual guess))
     sum 1))
 
+(defun population-by-fitness (population colors guesses responses)
+  (mapcar
+    (lambda (individual) (list individual (fitness individual colors guesses responses)))
+    population))
+
 (defun population-by-relative-fitness (population colors guesses responses)
   (let*
     (
-      (individuals-to-fitness
-        (mapcar
-          (lambda (individual) (list individual (fitness individual colors guesses responses)))
-          population))
+      (individuals-to-fitness (population-by-fitness population colors guesses responses))
       (sum-of-fitnesses (reduce #'+ (mapcar #'second individuals-to-fitness))))
     (mapcar
       (lambda (individual-to-fitness)
         ; for each individual, divide their fitness by the total fitness of the population
         (list (first individual-to-fitness) (safe-division (second individual-to-fitness) (float sum-of-fitnesses))))
       individuals-to-fitness)))
+
+(defun fittest-individual (population colors guesses responses)
+  (first
+    (first
+      (sort
+        (population-by-fitness population colors guesses responses)
+        #'>
+        :key #'second))))
 
 (defun random-selection (population colors guesses responses)
   "Chooses a individual from the population with a bias for fitness"
@@ -81,8 +91,7 @@
         collect possibly-mutated-child)))
     (setf *population* new-population)
 
-    ; TODO: sort new population by fitness and pick most fit
-    (first new-population)))
+    (fittest-individual new-population colors guesses responses)))
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors SCSA last-response)

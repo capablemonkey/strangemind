@@ -64,6 +64,18 @@
 
     (is
       '(
+        ((A B C D) 3)
+        ((F F F F) 1)
+        ((G D F B) 2))
+      (population-by-fitness
+        population
+        *test-colors*
+        guesses
+        responses)
+      "population-fitness maps individuals to their fitness")
+
+    (is
+      '(
         ((A B C D) 0.5)
         ((F F F F) 0.16666667)
         ((G D F B) 0.33333334))
@@ -73,6 +85,15 @@
         guesses
         responses)
       "population-by-relative-fitness maps individuals to their fitness relative to the rest of population")
+
+    (is
+      '(A B C D)
+      (fittest-individual
+        population
+        *test-colors*
+        guesses
+        responses)
+      "fittest-individual selects the most fit individual")
 
     (ok
       (let*
