@@ -80,7 +80,7 @@
 
 (defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
-  (print *population*)
+  ; (print *population*)
   (let
     ((new-population
       (loop for _ in *population*
