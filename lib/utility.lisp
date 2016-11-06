@@ -37,6 +37,11 @@
     (Y 24)
     (Z 25)))
 
+(defun safe-division (x y)
+  (if (= y 0)
+    0
+    (/ x y)))
+
 (defun my-color-counter (colors list)
   (loop with tally = (make-array (length colors) :initial-element 0)
      for peg in list

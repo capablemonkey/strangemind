@@ -1,3 +1,5 @@
+(load (merge-pathnames "utility.lisp" *load-truename*))
+
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
@@ -25,8 +27,23 @@
     when (equal response (my-process-guess colors individual guess))
     sum 1))
 
+(defun population-by-relative-fitness (population colors guesses responses)
+  (let*
+    (
+      (individuals-to-fitness
+        (mapcar
+          (lambda (individual) (list individual (fitness individual colors guesses responses)))
+          population))
+      (sum-of-fitnesses (reduce #'+ (mapcar #'second individuals-to-fitness))))
+    (mapcar
+      (lambda (individual-to-fitness)
+        ; for each individual, divide their fitness by the total fitness of the population
+        (list (first individual-to-fitness) (safe-division (second individual-to-fitness) (float sum-of-fitnesses))))
+      individuals-to-fitness)))
+
 (defun random-selection (population colors guesses responses)
-  "Chooses a individual from the population with a bias for fitness")
+  "Chooses a individual from the population with a bias for fitness"
+  (pick-with-probability (population-by-relative-fitness population colors guesses responses)))
 
 (defun reproduce (parent-a parent-b)
   "Returns a single individual offspring from two individuals")

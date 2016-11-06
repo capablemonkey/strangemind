@@ -1,4 +1,7 @@
+(load (merge-pathnames "../lib/utility.lisp" *load-truename*))
 (load (merge-pathnames "../lib/genetic.lisp" *load-truename*))
+
+(defparameter *test-colors* '(A B C D E F G))
 
 (subtest "Testing Genetic Algorithm team"
   ; TODO: ensure each individual in initial population contains only valid colors
@@ -10,4 +13,34 @@
   (is
     *population-size*
     (length (initial-population 4 '(A B C D E F)))
-    "ensure initial population is of size *population-size*"))
+    "Ensure initial population is of size *population-size*")
+
+  (subtest "Test fitness function"
+    (is
+      3
+      (fitness
+        '(A B C D)
+        *test-colors*
+        '((A A A A) (B B B B) (G G G G))
+        '((1 0) (1 0) (0 0))))
+
+    (is
+      0
+      (fitness
+        '(F F F F)
+        *test-colors*
+        '((A A A A) (B B B B) (G G G G))
+        '((1 1) (1 1) (1 1)))))
+
+  (is
+    '(
+      ((A B C D) 0.5)
+      ((F F F F) 0.16666667)
+      ((G D F B) 0.33333334))
+    (population-by-relative-fitness
+      '((A B C D) (F F F F) (G D F B))
+      *test-colors*
+      '((A A F D) (B B B B) (F C C C) (A G F B))
+      '((2 0) (1 0) (1 0) (2 1)))
+    "population-by-relative-fitness returns expected result"))
+    
