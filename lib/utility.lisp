@@ -38,6 +38,7 @@
     (Z 25)))
 
 (defun safe-division (x y)
+  "Does not raise an exception if dividing by zero, returns 0 instead"
   (if (= y 0)
     0
     (/ x y)))
@@ -87,3 +88,7 @@
       ; do (format t "~%random: ~a" random-number)
       when (>= running-sum random-number)
       do (return-from pick-with-probability (first tuple)))))
+
+(defun set-nth (list n val)
+  "Return a copy of list where the nth element is val"
+  (loop for i from 0 for j in list collect (if (= i n) val j)))

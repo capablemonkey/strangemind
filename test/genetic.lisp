@@ -39,12 +39,21 @@
 
   (ok
     (let ((child (reproduce '(A B C D) '(E F G H))))
-      (print child)
       (or
         (equal child '(A F G H))
         (equal child '(A B G H))
         (equal child '(A B C H))))
     "reproduce returns a valid child")
+
+  (is
+    4
+    (length (mutate *test-colors* '(A B C D)))
+    "mutate returns a mutated individual of the same length")
+
+  (is
+    4
+    (length (mutate-with-chance *test-colors* '(A B C D) 0.50))
+    "mutate-with-chance returns an individual of the correct length")
 
   (let
     ; set some values to re-use in our tests:

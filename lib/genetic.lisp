@@ -53,12 +53,20 @@
       (subseq parent-a 0 crossover-index)
       (subseq parent-b crossover-index (length parent-b)))))
 
-(defun mutate (individual)
-  "Mutate the individual")
+; Change a random peg to a random color
+(defun mutate (colors individual)
+  "Mutate the individual"
+  (set-nth
+    individual
+    (random (1- (length individual)))
+    (nth (random (length colors)) colors)))
 
 ; TODO: we may want the mutation rate to decrease with time, similar to simulated annealing
-(defun mutate-with-chance (individual chance)
-  "Choose to mutate the individual based on some probability")
+(defun mutate-with-chance (colors individual chance)
+  "Choose to mutate the individual based on some probability"
+  (if (<= (random 1) chance)
+    (mutate colors individual)
+    individual))
 
 (defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
@@ -69,7 +77,7 @@
         for parent-a = (random-selection *population* colors guesses responses)
         for parent-b = (random-selection *population* colors guesses responses)
         for child = (reproduce parent-a parent-b)
-        for possibly-mutated-child = (mutate-with-chance child *mutation-rate*)
+        for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
         collect possibly-mutated-child)))
     (setf *population* new-population)
 
