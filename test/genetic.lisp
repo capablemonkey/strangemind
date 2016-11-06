@@ -55,6 +55,13 @@
     (length (mutate-with-chance *test-colors* '(A B C D) 0.50))
     "mutate-with-chance returns an individual of the correct length")
 
+  (is
+    '((A B C))
+    (prune-already-guessed
+      '((A B C) (C C C) (X X X))
+      '((Z Z Z) (C C C) (X X X)))
+    "prune-already-guessed should prune from a population individuals which have already been guessed")
+
   (let
     ; set some values to re-use in our tests:
     (
@@ -96,6 +103,15 @@
         guesses
         responses)
       "fittest-individual selects the most fit individual")
+
+    (is
+      '(G D F B)
+      (fittest-individual
+        population
+        *test-colors*
+        (append '((A B C D)) guesses)
+        (append '((4 0)) responses))
+      "fittest-individual does not return an already guessed individual")
 
     (ok
       (let*

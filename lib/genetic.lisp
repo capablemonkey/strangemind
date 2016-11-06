@@ -3,7 +3,8 @@
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
-(defparameter *population-size* 200)
+; TODO: scale population size with # of pegs and # of colors
+(defparameter *population-size* 1000)
 (defparameter *mutation-rate* 0.05)
 (defvar *population* nil)
 
@@ -35,7 +36,8 @@
   ; For now, just a count of how many guess-response pairs it matches
   (+
     (consistentcy-score individual colors guesses responses)
-    (previous-guess-penalty individual guesses)))
+    ; (previous-guess-penalty individual guesses)))
+    0))
 
 (defun population-by-fitness (population colors guesses responses)
   (mapcar
@@ -53,11 +55,14 @@
         (list (first individual-to-fitness) (safe-division (second individual-to-fitness) (float sum-of-fitnesses))))
       individuals-to-fitness)))
 
+(defun prune-already-guessed (population guesses)
+  (set-difference population guesses :test 'equal))
+
 (defun fittest-individual (population colors guesses responses)
   (first
     (first
       (sort
-        (population-by-fitness population colors guesses responses)
+        (population-by-fitness (prune-already-guessed population guesses) colors guesses responses)
         #'>
         :key #'second))))
 
@@ -102,6 +107,7 @@
           for child = (reproduce parent-a parent-b)
           for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
           collect possibly-mutated-child)))
+
     (setf *population* new-population)
 
     (fittest-individual new-population colors guesses responses)))

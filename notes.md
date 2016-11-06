@@ -35,6 +35,7 @@ answer
 things to tune:
 - mutation rate
 - optimal population size
+- crossover point
 
 TODO for next week:
 - write functions to detect the given SCSAs
