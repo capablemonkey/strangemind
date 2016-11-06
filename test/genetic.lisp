@@ -60,7 +60,12 @@
     (
       (population '((A B C D) (F F F F) (G D F B)))
       (guesses '((A A F D) (B B B B) (F C C C) (A G F B)))
-      (responses '((2 0) (1 0) (1 0) (2 1))))
+      (responses '((2 0) (1 0) (1 0) (2 1)))
+      (pop-by-relative-fitness
+        '(
+          ((A B C D) 0.5)
+          ((F F F F) 0.16666667)
+          ((G D F B) 0.33333334))))
 
     (is
       '(
@@ -75,10 +80,7 @@
       "population-fitness maps individuals to their fitness")
 
     (is
-      '(
-        ((A B C D) 0.5)
-        ((F F F F) 0.16666667)
-        ((G D F B) 0.33333334))
+      pop-by-relative-fitness
       (population-by-relative-fitness
         population
         *test-colors*
@@ -101,7 +103,7 @@
           (selections
             (loop
               for i from 1 to 1000
-              collect (random-selection population *test-colors* guesses responses)))
+              collect (random-selection pop-by-relative-fitness)))
           (count-abcd
             (count '(A B C D) selections :test #'equal))
           (count-ffff

@@ -61,9 +61,9 @@
         #'>
         :key #'second))))
 
-(defun random-selection (population colors guesses responses)
+(defun random-selection (population-by-relative-fitness)
   "Chooses a individual from the population with a bias for fitness"
-  (pick-with-probability (population-by-relative-fitness population colors guesses responses)))
+  (pick-with-probability population-by-relative-fitness))
 
 ; TODO: We may want to tweak the crossover point as time goes on
 (defun reproduce (parent-a parent-b)
@@ -91,15 +91,17 @@
 (defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
   ; (print *population*)
-  (let
-    ((new-population
-      (loop for _ in *population*
-        ; TODO: should we allow parents to be identical/self?
-        for parent-a = (random-selection *population* colors guesses responses)
-        for parent-b = (random-selection *population* colors guesses responses)
-        for child = (reproduce parent-a parent-b)
-        for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
-        collect possibly-mutated-child)))
+  (let*
+    (
+      (current-population-by-relative-fitness (population-by-relative-fitness *population* colors guesses responses))
+      (new-population
+        (loop for _ in *population*
+          ; TODO: should we allow parents to be identical/self?
+          for parent-a = (random-selection current-population-by-relative-fitness)
+          for parent-b = (random-selection current-population-by-relative-fitness)
+          for child = (reproduce parent-a parent-b)
+          for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
+          collect possibly-mutated-child)))
     (setf *population* new-population)
 
     (fittest-individual new-population colors guesses responses)))
