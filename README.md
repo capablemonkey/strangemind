@@ -1,5 +1,7 @@
 # StrangeMind
 
+[![Build Status](https://travis-ci.com/capablemonkey/mastermind.svg?token=565F651SdURFqsqwp3Jy&branch=master)](https://travis-ci.com/capablemonkey/mastermind)
+
 Let's win this.
 
 We use the Common Lisp style guide: http://lisp-lang.org/style-guide/
