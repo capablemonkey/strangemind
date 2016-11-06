@@ -19,13 +19,23 @@
   (loop for i from 1 to *population-size*
     collect (insert-colors board colors)))
 
-(defun fitness (individual colors guesses responses)
-  "Determines fitness of individual based on how consistent it is with past guesses and responses"
-  ; For now, just a count of how many guess-response pairs it matches
+(defun consistentcy-score (individual colors guesses responses)
   (loop for guess in guesses
     for response in responses
     when (equal response (my-process-guess colors individual guess))
     sum 1))
+
+(defun previous-guess-penalty (individual guesses)
+  (loop for guess in guesses
+    when (equal individual guess)
+    sum -0.5))
+
+(defun fitness (individual colors guesses responses)
+  "Determines fitness of individual based on how consistent it is with past guesses and responses"
+  ; For now, just a count of how many guess-response pairs it matches
+  (+
+    (consistentcy-score individual colors guesses responses)
+    (previous-guess-penalty individual guesses)))
 
 (defun population-by-fitness (population colors guesses responses)
   (mapcar
