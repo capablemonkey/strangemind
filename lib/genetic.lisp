@@ -107,7 +107,7 @@
     (return-from Genetic (first-guess board colors)))
 
   ; record last response
-  (push last-response *responses*)
+  (push (firstn 2 last-response) *responses*)
 
   (let ((guess (genetic-algorithm colors *guesses* *responses*)))
     (push guess *guesses*)

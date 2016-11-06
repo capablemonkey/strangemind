@@ -40,7 +40,7 @@
 (defun safe-division (x y)
   "Does not raise an exception if dividing by zero, returns 0 instead"
   (if (= y 0)
-    0
+    0.0
     (/ x y)))
 
 (defun my-color-counter (colors list)
