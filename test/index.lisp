@@ -11,3 +11,5 @@
 (load (merge-pathnames "scsa.lisp" *load-truename*))
 (load (merge-pathnames "genetic.lisp" *load-truename*))
 (load (merge-pathnames "utility.lisp" *load-truename*))
+
+(sb-ext:exit :code (if (finalize) 0 1))
