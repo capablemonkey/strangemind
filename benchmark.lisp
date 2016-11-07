@@ -61,7 +61,7 @@
     (loop for pegs from min-size to max-size do
       (Mastermind pegs colors NIL)
       (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
-      (benchmark-tournament team 2))))
+      (benchmark-tournament team 10))))
 
 ; keeping pegs fixed at 4, benchmark against colors:
 
@@ -70,9 +70,14 @@
     (loop for colors from min-colors to max-colors do
       (Mastermind pegs colors NIL)
       (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
-      (benchmark-tournament team 2))))
+      (benchmark-tournament team 10))))
 
-(benchmark-pegs 'RandomFolks 3 5)
+; TODO: record average time per game.
+; TODO: can we parallelize this?
+
+; (benchmark-pegs 'RandomFolks 3 4)
 (benchmark-pegs 'Knuth 3 5)
+(benchmark-pegs 'Genetic 3 5)
 ; (benchmark-colors 'RandomFolks 6 8)
-; (benchmark-colors 'Knuth 9 10)
+(benchmark-colors 'Knuth 5 8)
+(benchmark-colors 'Genetic 5 8)
