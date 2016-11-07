@@ -132,18 +132,20 @@
 (defmethod play-round ((self game) team)
   (declare (special *Mastermind*)) 
   (loop with game-cutoff = (game-cutoff self)
-     with stop-time = (+ 1000000 (get-internal-run-time))
+     with start-time = (get-internal-run-time)
+     with stop-time = (+ 1000000 start-time)
      with board = (board *Mastermind*)
      with colors = (colors *Mastermind*)
      with SCSA = (SCSA *Mastermind*)
      for i from 1 to game-cutoff
+     for time-before-guess = (get-internal-run-time)
      for guess = (funcall team board colors SCSA nil) then (funcall team board colors SCSA response)
      for response = (respond-to-guess self guess i)
      for win = (equal (first response) 'win)
      for time-is-up = (> (get-internal-run-time) stop-time)
      ; do (format t "~%[~a] Guess: ~a | Response: ~a" i guess response)
      ; do (print (list (get-internal-run-time) stop-time))
-     ; do (format t "~% Time took for guess: ~a" (- ))
+     ; do (format t "~% Time took for guess: ~a" (- (get-internal-run-time) time-before-guess))
      ; when win
      ; do (format t "~%Win. Round over.")
      ; else when response
