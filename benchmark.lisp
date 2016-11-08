@@ -30,7 +30,7 @@
 (defun benchmark-tournament (team trials)
   (let*
     ((results ; return values from running tournaments
-      (mapcar
+      (mapcar ; TODO: can we parallelize each tournament?
         (lambda (_) (play-tournament *Mastermind* team (random-scsa) 100))
         (make-list trials)))
       (scores (mapcar #'first results))
@@ -40,6 +40,10 @@
       (total-played (* trials 100))
       (total-lost (reduce #'+ games-lost))
       (total-failed (reduce #'+ games-failed)))
+    (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:"
+      team
+      (number-of-colors *Mastermind*)
+      (board *Mastermind*))
     (format t "~%Total games: ~a" total-played)
     (format t "~%Total games won: ~a" (- total-played total-lost))
     (format t "~%Total games lost: ~a" total-lost)
@@ -60,8 +64,7 @@
   (let ((colors 6))
     (loop for pegs from min-size to max-size do
       (Mastermind pegs colors NIL)
-      (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
-      (benchmark-tournament team 10))))
+      (benchmark-tournament team 5))))
 
 ; keeping pegs fixed at 4, benchmark against colors:
 
@@ -70,7 +73,7 @@
     (loop for colors from min-colors to max-colors do
       (Mastermind pegs colors NIL)
       (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
-      (benchmark-tournament team 10))))
+      (benchmark-tournament team 5))))
 
 ; TODO: record average time per game.
 ; TODO: can we parallelize this?

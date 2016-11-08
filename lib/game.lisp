@@ -174,6 +174,7 @@
      with codes = (if (listp argument) argument (SCSA-sampler number-of-games argument (board self) (number-of-colors self)))
      for i from 0 to (1- number-of-games)
      for round = (and (setf (answer *Mastermind*) (nth i codes)) (play-round self team)) ;this is where the; code is set
+     do (progn (format t ".") (force-output))
     ;do (print (nth i codes))
     ; when (= (* 10 (floor (/ i 10))) i) do (print i)
      when (equal (first round) 'win)
