@@ -4,7 +4,6 @@ sudo: required
 env:
   matrix:
     - LISP=sbcl
-    - LISP=sbcl32
 
 # either use a local install.sh script or install it via curl. Feel
 # free to simplify this section in your own .travis.yml file.
