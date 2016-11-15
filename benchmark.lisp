@@ -72,7 +72,6 @@
   (let ((pegs 4))
     (loop for colors from min-colors to max-colors do
       (Mastermind pegs colors NIL)
-      (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:" team colors pegs)
       (benchmark-tournament team 5))))
 
 ; TODO: record average time per game.
