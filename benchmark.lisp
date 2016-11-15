@@ -49,6 +49,7 @@
     (format t "~%Total games lost: ~a" total-lost)
     (format t "~%Total games with invalid guesses (!): ~a" total-failed)
     (format t "~%Average score: ~a" average-score)
+    (format t "~%")
     ; (print results)
     results
     ))
@@ -78,4 +79,8 @@
 ; TODO: can we parallelize this?
 
 ; (benchmark-pegs 'RandomFolks 3 4)
+(benchmark-pegs 'Knuth 3 5)
+(benchmark-pegs 'Genetic 3 5)
 ; (benchmark-colors 'RandomFolks 6 8)
+(benchmark-colors 'Knuth 5 8)
+(benchmark-colors 'Genetic 5 8)
