@@ -33,7 +33,7 @@
       (mapcar ; TODO: can we parallelize each tournament?
         (lambda (_) (play-tournament *Mastermind* team (random-scsa) 100))
         (make-list trials)))
-      (scores (mapcar #'first results))
+      (scores (mapcar (lambda (result) (scoring-function result)) results))
       (games-lost (mapcar #'second results))
       (games-failed (mapcar #'third results))
       (average-score (average scores))
