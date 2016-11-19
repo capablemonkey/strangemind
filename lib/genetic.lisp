@@ -3,7 +3,8 @@
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
-(defparameter *population-size* 200)
+; TODO: scale population size with # of pegs and # of colors
+(defparameter *population-size* 1000)
 (defparameter *mutation-rate* 0.05)
 (defvar *population* nil)
 
@@ -19,13 +20,24 @@
   (loop for i from 1 to *population-size*
     collect (insert-colors board colors)))
 
-(defun fitness (individual colors guesses responses)
-  "Determines fitness of individual based on how consistent it is with past guesses and responses"
-  ; For now, just a count of how many guess-response pairs it matches
+(defun consistentcy-score (individual colors guesses responses)
   (loop for guess in guesses
     for response in responses
     when (equal response (my-process-guess colors individual guess))
     sum 1))
+
+(defun previous-guess-penalty (individual guesses)
+  (loop for guess in guesses
+    when (equal individual guess)
+    sum -0.5))
+
+(defun fitness (individual colors guesses responses)
+  "Determines fitness of individual based on how consistent it is with past guesses and responses"
+  ; For now, just a count of how many guess-response pairs it matches
+  (+
+    (consistentcy-score individual colors guesses responses)
+    ; (previous-guess-penalty individual guesses)))
+    0))
 
 (defun population-by-fitness (population colors guesses responses)
   (mapcar
@@ -43,6 +55,9 @@
         (list (first individual-to-fitness) (safe-division (second individual-to-fitness) (float sum-of-fitnesses))))
       individuals-to-fitness)))
 
+(defun prune-already-guessed (population guesses)
+  (set-difference population guesses :test 'equal))
+
 (defun fittest-individual (population colors guesses responses)
   (first
     (first
@@ -51,17 +66,33 @@
         #'>
         :key #'second))))
 
-(defun random-selection (population colors guesses responses)
+(defun random-selection (population-by-relative-fitness)
   "Chooses a individual from the population with a bias for fitness"
-  (pick-with-probability (population-by-relative-fitness population colors guesses responses)))
+  (pick-with-probability population-by-relative-fitness))
 
 ; TODO: We may want to tweak the crossover point as time goes on
+; 1 point crossover
 (defun reproduce (parent-a parent-b)
   "Returns a single individual offspring from two individuals"
   (let ((crossover-index (1+ (random (1- (length parent-a))))))
     (append
       (subseq parent-a 0 crossover-index)
       (subseq parent-b crossover-index (length parent-b)))))
+
+; TODO: We may want to tweak the crossover point as time goes on
+; 2 point crossover
+(defun reproduce2 (parent-a parent-b)
+  "Returns a single individual offspring from two individuals"
+  (let ((crossover-index1 (1+ (random (1- (length parent-a)))))
+        (crossover-index2 (1+ (random (1- (length parent-a))))))
+    (append
+      (subseq parent-a 0 crossover-index1)
+      (subseq parent-b crossover-index1 crossover-index2)
+      (subseq parent-a crossover-index2 (length parent-a))
+    )
+  )
+)
+
 
 ; Change a random peg to a random color
 (defun mutate (colors individual)
@@ -80,17 +111,20 @@
 
 (defun genetic-algorithm (colors guesses responses)
   "Breeds a new generation and returns its most fit individual"
-  (print *population*)
-  (let
-    ((new-population
-      (loop for _ in *population*
-        ; TODO: should we allow parents to be identical/self?
-        for parent-a = (random-selection *population* colors guesses responses)
-        for parent-b = (random-selection *population* colors guesses responses)
-        for child = (reproduce parent-a parent-b)
-        for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
-        collect possibly-mutated-child)))
-    (setf *population* new-population)
+  ; (print *population*)
+  (let*
+    (
+      (current-population-by-relative-fitness (population-by-relative-fitness *population* colors guesses responses))
+      (new-population
+        (loop for _ in *population*
+          ; TODO: should we allow parents to be identical/self?
+          for parent-a = (random-selection current-population-by-relative-fitness)
+          for parent-b = (random-selection current-population-by-relative-fitness)
+          for child = (reproduce parent-a parent-b)
+          for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
+          collect possibly-mutated-child)))
+
+    (setf *population* (remove-duplicates new-population :test #'equal))
 
     (fittest-individual new-population colors guesses responses)))
 
@@ -103,7 +137,7 @@
     (setf *guesses* nil)
     (setf *responses* nil)
     ; TODO: ensure population does not include first guess
-    (setf *population* (initial-population board colors))
+    (setf *population* (remove-duplicates (initial-population board colors) :test #'equal))
     (push (first-guess board colors) *guesses*)
     (return-from Genetic (first-guess board colors)))
 
