@@ -6,22 +6,7 @@
 ;;Generate list of all possible SCSA for the current board
 ;;compare answers agaisnt that SCSA
 
-;;Resets all our stats related to scsa
-(defun reset-SCSA-stats ()
-  (progn (setf *mystery-1* 0)
-	 (setf *mystery-2* 0)
-	 (setf *mystery-3* 0)
-	 (setf *mystery-4* 0)
-	 (setf *mystery-5* 0)
-	 (setf *2-color-SCSA* 0)
-	 (setf *AB-SCSA* 0)
-	 (setf *at-most-once* 0)
-	 (setf *first-last* 0)
-	 (setf *less-than-three* 0)
-	 (setf *preference-fewer* 0)
-	 (setf *converted-to-generic* nil)
-	 (setf *mystery-1-pattern* nil)
-	 (setf *mystery-4-pattern* nil)))
+
 	 
 
 
@@ -126,6 +111,8 @@
 ;;; (mod board 3) == 1 only 1 element should have 1 greater
 ;;; (mod board 3) == 2 only 2 elements should have 1 greater
 
+
+;;ERROR here can't use Equal to check all 3, Equal can only check 2 at a time.
 (defun mystery-3-checker (guess)
   (if (equal (length (remove-duplicates guess)) 3)
       (progn (setq colors-in-guess (remove-duplicates guess))
@@ -210,8 +197,8 @@
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
 (defun AB-checker (guess)
-  (setq result (remove-duplicates guess)
-	(if (and (equal (length result) 2) (member A result) (member B result)) (setf *AB-SCSA* (+ 1 *AB-SCSA*)))))
+  ((setq result (remove-duplicates guess))
+   (if (and (equal (length result) 2) (member A result) (member B result)) (setf *AB-SCSA* (+ 1 *AB-SCSA*)))))
      
 
 
@@ -266,9 +253,27 @@
 	 (mystery-1-checker *converted-to-generic*)
 	 (mystery-3-checker last-response)
 	 (mystery-4-checker last-response)
-	 (2-color-checker last-reponse)
+	 (2-color-checker last-response)
 	 (AB-Checker last-response)
 	 (at-most-once-checker last-response)
 	 (first-last-checker last-response)
 	 (less-than-three-checker last-response)
 	 (preference-fewer-checker last-response)))
+
+
+;;Resets all our stats related to scsa
+(defun reset-SCSA-stats ()
+  (progn (setf *mystery-1* 0)
+	 (setf *mystery-2* 0)
+	 (setf *mystery-3* 0)
+	 (setf *mystery-4* 0)
+	 (setf *mystery-5* 0)
+	 (setf *2-color-SCSA* 0)
+	 (setf *AB-SCSA* 0)
+	 (setf *at-most-once* 0)
+	 (setf *first-last* 0)
+	 (setf *less-than-three* 0)
+	 (setf *preference-fewer* 0)
+	 (setf *converted-to-generic* nil)
+	 (setf *mystery-1-pattern* nil)
+	 (setf *mystery-4-pattern* nil)))
