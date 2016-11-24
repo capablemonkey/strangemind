@@ -1,12 +1,15 @@
 (load (merge-pathnames "utility.lisp" *load-truename*))
+(load (merge-pathnames "knuth.lisp" *load-truename*))
 
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 1000)
+(defparameter *population-size* 100)
 (defparameter *mutation-rate* 0.05)
-(defvar *population* nil)
+
+(defparameter *max-generations-per-guess* 10)
+(defparameter *max-eligible-codes-per-guess* 200)
 
 (defun first-guess (board colors)
   "Make a guess with as many colors as possible"
@@ -93,24 +96,52 @@
     (mutate colors individual)
     individual))
 
-(defun genetic-algorithm (colors guesses responses)
-  "Breeds a new generation and returns its most fit individual"
-  ; (print *population*)
-  (let*
+(defun genetic-algorithm (population colors guesses responses)
+  "Given a population, return a new generation by breeding."
+  (let
+    ((current-population-by-relative-fitness (population-by-relative-fitness population colors guesses responses)))
+    (loop for _ in population
+      ; TODO: should we allow parents to be identical/self?
+      for parent-a = (random-selection current-population-by-relative-fitness)
+      for parent-b = (random-selection current-population-by-relative-fitness)
+      for child = (reproduce parent-a parent-b)
+      for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
+      collect possibly-mutated-child)))
+
+(defun eligible-p (individual colors guesses responses)
+  ; TODO: can use `every` function which may be more efficient than map
+  (equal (length guesses) (consistentcy-score individual colors guesses responses)))
+
+(defun eligible-individuals (population colors guesses responses)
+  (remove-if-not
+    (lambda (individual) (eligible-p individual colors guesses responses))
+    population))
+
+(defun generate-eligible-codes (board colors guesses responses)
+  (let
     (
-      (current-population-by-relative-fitness (population-by-relative-fitness *population* colors guesses responses))
-      (new-population
-        (loop for _ in *population*
-          ; TODO: should we allow parents to be identical/self?
-          for parent-a = (random-selection current-population-by-relative-fitness)
-          for parent-b = (random-selection current-population-by-relative-fitness)
-          for child = (reproduce parent-a parent-b)
-          for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
-          collect possibly-mutated-child)))
-
-    (setf *population* new-population)
-
-    (fittest-individual new-population colors guesses responses)))
+      (eligible-codes nil)
+      (population (initial-population board colors)))
+    (loop
+      with generation-counter = 0
+      until
+        (or
+          (>= (length eligible-codes) *max-eligible-codes-per-guess*)
+          (>= generation-counter *max-generations-per-guess*))
+      do
+        (progn
+          (setf population (genetic-algorithm population colors guesses responses))
+          (setf eligible-codes
+            (remove-duplicates
+              (append
+                eligible-codes
+                (eligible-individuals population colors guesses responses))
+              :test 'equal)))
+      do (incf generation-counter 1))
+    (format t "~%Eligible codes: ~a" (length eligible-codes))
+    (if (> (length eligible-codes) *max-eligible-codes-per-guess*)
+      (subseq eligible-codes 0 *max-eligible-codes-per-guess*)
+      eligible-codes)))
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors SCSA last-response)
@@ -121,13 +152,15 @@
     (setf *guesses* nil)
     (setf *responses* nil)
     ; TODO: ensure population does not include first guess
-    (setf *population* (initial-population board colors))
     (push (first-guess board colors) *guesses*)
     (return-from Genetic (first-guess board colors)))
 
   ; record last response
   (push (firstn 2 last-response) *responses*)
 
-  (let ((guess (genetic-algorithm colors *guesses* *responses*)))
+  (let*
+    (
+      (eligible-codes (generate-eligible-codes board colors *guesses* *responses*))
+      (guess (maximize-minimum-codes-eliminated colors eligible-codes eligible-codes)))
     (push guess *guesses*)
     guess))

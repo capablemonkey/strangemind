@@ -105,13 +105,27 @@
       "fittest-individual selects the most fit individual")
 
     (is
-      '(G D F B)
-      (fittest-individual
-        population
+      (length population)
+      (length (genetic-algorithm population *test-colors* guesses responses))
+      "genetic-algorithm returns a new population of the same size as the input population")
+
+    (is
+      T
+      (eligible-p
+        '(A B C D)
         *test-colors*
-        (append '((A B C D)) guesses)
-        (append '((4 0)) responses))
-      "fittest-individual does not return an already guessed individual")
+        '((A A A A) (B B B B) (A F F D))
+        '((1 0) (1 0) (2 0)))
+      "eligible-p returns true for eligible codes")
+
+    (is
+      NIL
+      (eligible-p
+        '(A B C D)
+        *test-colors*
+        '((A A A A) (B B B B) (A F F D))
+        '((0 0) (3 0) (0 2)))
+      "eligible-p returns NIL for ineligible codes")
 
     (ok
       (let*
