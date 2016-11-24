@@ -28,16 +28,13 @@
 
 (defun score-guess (colors guess remaining-codes)
   (let
-    ((tally (make-hash-table))
-    (max-hit 0))
+    ((tally (make-hash-table :test #'equal)))
     (loop
       for code in remaining-codes
       for response = (my-process-guess colors code guess)
       do
       (setf (gethash response tally) (+ 1 (gethash response tally 0))))
-
-    (setf max-hit (maximum (get-values tally)))
-    (- (length remaining-codes) max-hit)))
+    (- (length remaining-codes) (maximum (get-values tally)))))
 
 (defun Knuth (board colors SCSA last-response)
   (declare (ignore SCSA))
