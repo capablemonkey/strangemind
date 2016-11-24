@@ -36,6 +36,30 @@
       (setf (gethash response tally) (+ 1 (gethash response tally 0))))
     (- (length remaining-codes) (maximum (get-values tally)))))
 
+(defun filter-past-guesses (codes past-guesses)
+  (remove-if
+    (lambda (code) (member code past-guesses :test 'equal))
+    codes))
+
+; list of tuples (<guess> <score of guess>)
+(defun score-guesses (colors guesses remaining-codes)
+  (mapcar
+    (lambda (guess)
+      (list guess (score-guess colors guess remaining-codes)))
+    guesses))
+
+(defun guess-with-score-max (tuples)
+  (first
+    (first
+      (sort tuples #'> :key #'second))))
+
+(defun maximize-minimum-codes-eliminated (colors potential-guesses remaining-codes)
+  (guess-with-score-max
+    (score-guesses
+      colors
+      potential-guesses
+      remaining-codes)))
+
 (defun Knuth (board colors SCSA last-response)
   (declare (ignore SCSA))
 
@@ -46,42 +70,23 @@
     (push (first-guess board colors) *knuth-past-guesses*)
     (return-from Knuth (first-guess board colors)))
 
-  ; (format t "~%Number of remaining codes: ~a" (length *knuth-remaining-codes*))
-
   ; remove from possible codes the codes which would not have generated this response for the last guess
   (setf *knuth-remaining-codes*
     (remove-if-not
       (lambda (code)
-        ; (FORMAT T "~%~a with guess ~a gives ~a vs ~a"
-        ;   code
-        ;   (first *knuth-past-guesses*)
-        ;   (my-process-guess (length colors) code (first *knuth-past-guesses*))
-        ;   (firstn 2 last-response))
         (equal
           (firstn 2 last-response)
           (my-process-guess colors code (first *knuth-past-guesses*))))
       *knuth-remaining-codes*))
 
-  (let*
-    ; list of tuples (<guess> <score of guess>)
-    ((poss-guesses-with-scores
-      (mapcar
-        (lambda (guess)
-            (list guess (score-guess colors guess *knuth-remaining-codes*)))
+  (let
+    ((guess
+      (maximize-minimum-codes-eliminated
+        colors
         ; TODO: use set of all possible codes instead of remaining codes because
         ; the ideal guess may not be one of the remaining codes.
-        *knuth-remaining-codes*))
-    ; filter out guesses we've made before
-    (past-guesses-filtered
-      (remove-if
-        (lambda (guess-with-score)
-          (member (first guess-with-score) *knuth-past-guesses* :test 'equal))
-        poss-guesses-with-scores))
-    ; find the tuple with the best score
-    (guess-with-score-max
-      (first
-        (sort past-guesses-filtered #'> :key #'second)))
-    (guess (first guess-with-score-max)))
+        (filter-past-guesses *knuth-remaining-codes* *knuth-past-guesses*)
+        *knuth-remaining-codes*)))
 
     (push guess *knuth-past-guesses*)
     guess))
