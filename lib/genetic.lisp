@@ -20,8 +20,7 @@
 (defun initial-population (board colors)
   "Generate the initial population of size *population-size* using individuals with randomly picked colors."
   ; TODO: ensure there are no duplicate individuals
-  (loop for i from 1 to *population-size*
-    collect (insert-colors board colors)))
+  (generate-n-unique *population-size* (lambda () (insert-colors board colors))))
 
 (defun consistentcy-score (individual colors guesses responses)
   (loop for guess in guesses

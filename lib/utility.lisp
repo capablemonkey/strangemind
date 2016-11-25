@@ -93,3 +93,12 @@
 (defun set-nth (list n val)
   "Return a copy of list where the nth element is val"
   (loop for i from 0 for j in list collect (if (= i n) val j)))
+
+(defun generate-n-unique (n generator)
+  (let ((collection (remove-duplicates (loop for i from 1 to n collect (funcall generator)))))
+    (loop
+      until (= n (length collection))
+      for appendage = (loop for i from 1 to (- n (length collection)) collect (funcall generator))
+      do (setf collection (remove-duplicates (append collection appendage))))
+    collection))
+
