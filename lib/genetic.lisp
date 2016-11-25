@@ -5,11 +5,16 @@
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 100)
-(defparameter *mutation-rate* 0.05)
+(defparameter *population-size* 150)
+(defparameter *mutation-rate* 0.03)
+(defparameter *permutation-rate* 0.03)
+(defparameter *inversion-rate* 0.03)
 
-(defparameter *max-generations-per-guess* 10)
-(defparameter *max-eligible-codes-per-guess* 200)
+(defparameter *max-generations-per-guess* 100)
+(defparameter *max-eligible-codes-per-guess* 100)
+
+(defparameter *1-point-crossover-rate* 0.5) ; p
+(defparameter *2-point-crossover-rate* 0.5) ; 1-p
 
 (defun first-guess (board colors)
   "Make a guess with as many colors as possible"
@@ -72,13 +77,62 @@
   "Chooses a individual from the population with a bias for fitness"
   (pick-with-probability population-by-relative-fitness))
 
+;Used by reproduce 2. and inversion.
+(defun get-two-indexes (individual)
+  "Generates list with 2 random indexes in individual. First is smaller than second."
+  (let
+    (
+      (index1 (1+ (random (1- (length individual)))))
+      (index2 (1+ (random (1- (length individual))))))
+    (loop while (= index1 index2) do
+      (setf index1 (1+ (random (1- (length individual))))))
+
+    (if (< index1 index2)
+        (list index1 index2)
+        (list index2 index1))))
+
 ; TODO: We may want to tweak the crossover point as time goes on
-(defun reproduce (parent-a parent-b)
+; ADDED: Either parent can be on left or right
+; 1 Point Crossover
+(defun 1-point-crossover (parent-a parent-b)
+  "Returns a single individual offspring from two individuals using 1-point crossover"
+  (let
+    (
+      (crossover-index (1+ (random (1- (length parent-a)))))
+      (coin-flip (random 2)))
+    (if (= coin-flip 0)
+      (append
+        (subseq parent-a 0 crossover-index)
+        (subseq parent-b crossover-index (length parent-b)))
+      (append
+        (subseq parent-b 0 crossover-index)
+        (subseq parent-a crossover-index (length parent-b))))))
+
+; TODO: We may want to tweak the crossover point as time goes on
+; ADDED: Either parent can be on left or right
+; 2 Point Crossover
+(defun 2-point-crossover (parent-a parent-b)
+  "Returns a single individual offspring from two individuals using 2-point crossover"
+  (let
+    (
+      (two-index (get-two-indexes parent-a))
+      (coin-flip (random 2)))
+    (if (= coin-flip 0)
+       (append
+         (subseq parent-a 0 (first two-index))
+         (subseq parent-b (first two-index) (second two-index))
+         (subseq parent-a (second two-index) (length parent-a)))
+       (append
+         (subseq parent-b 0 (first two-index))
+         (subseq parent-a (first two-index) (second two-index))
+         (subseq parent-b (second two-index) (length parent-a))))))
+
+; TODO: paper suggests .5 each. Maybe adjust rate of reproduce1, reproduce 2 based on SCSA?
+(defun reproduce-with-chance (par1 par2)
   "Returns a single individual offspring from two individuals"
-  (let ((crossover-index (1+ (random (1- (length parent-a))))))
-    (append
-      (subseq parent-a 0 crossover-index)
-      (subseq parent-b crossover-index (length parent-b)))))
+    (if (<= (random 1.0) *1-point-crossover-rate*)
+      (1-point-crossover par1 par2)
+      (2-point-crossover par1 par2)))
 
 ; Change a random peg to a random color
 (defun mutate (colors individual)
@@ -88,11 +142,38 @@
     (random (1- (length individual)))
     (nth (random (length colors)) colors)))
 
+(defun permutate (individual)
+  "Permutate the individual"
+  (let ((two-index (get-two-indexes individual)))
+    (rotatef (nth (first two-index) individual) (nth (second two-index) individual))
+    individual))
+
+(defun inversion (individual)
+  "Invert the individual"
+  (let ((two-index (get-two-indexes individual)))
+    (append
+      (subseq individual 0 (first two-index))
+      (reverse (subseq individual (first two-index) (second two-index)))
+      (subseq individual (second two-index) (length individual)))))
+
 ; TODO: we may want the mutation rate to decrease with time, similar to simulated annealing
+; Currently always mutates.
 (defun mutate-with-chance (colors individual chance)
   "Choose to mutate the individual based on some probability"
-  (if (<= (random 1) chance)
+  (if (<= (random 1.0) chance)
     (mutate colors individual)
+    individual))
+
+(defun permutate-with-chance (individual chance)
+  "Choose to permutate the individual based on some probability"
+  (if (<= (random 1.0) chance)
+    (permutate individual)
+    individual))
+
+(defun inversion-with-chance (individual chance)
+  "Choose to use inversion on the individual based on some probability"
+  (if (<= (random 1.0) chance)
+    (inversion individual)
     individual))
 
 (defun genetic-algorithm (population colors guesses responses)
@@ -103,9 +184,14 @@
       ; TODO: should we allow parents to be identical/self?
       for parent-a = (random-selection current-population-by-relative-fitness)
       for parent-b = (random-selection current-population-by-relative-fitness)
-      for child = (reproduce parent-a parent-b)
+      for child = (reproduce-with-chance parent-a parent-b)
       for possibly-mutated-child = (mutate-with-chance colors child *mutation-rate*)
-      collect possibly-mutated-child)))
+      for possibly-permutated-child = (permutate-with-chance possibly-mutated-child *permutation-rate*)
+      for possibly-inverted-child = (inversion-with-chance possibly-permutated-child *inversion-rate*)
+      collect
+        (if (not (equal (find possibly-inverted-child population :test #'equal) nil))
+          (rand-colors (length possibly-inverted-child) colors)
+          possibly-inverted-child))))
 
 (defun eligible-p (individual colors guesses responses)
   ; TODO: can use `every` function which may be more efficient than map

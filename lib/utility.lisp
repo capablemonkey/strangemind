@@ -102,3 +102,10 @@
       do (setf collection (remove-duplicates (append collection appendage))))
     collection))
 
+;makes a list of length length containing colors selected at random from colors
+(defun rand-colors (length colors)
+  (loop for i from 1 to length
+     collect (random-chooser colors)))
+
+(defun random-chooser (list)
+  (nth (random (length list)) list))
