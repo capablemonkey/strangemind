@@ -9,6 +9,7 @@
 (defparameter *mutation-rate* 0.03)
 (defparameter *permutation-rate* 0.03)
 (defparameter *inversion-rate* 0.03)
+(defparameter *fitness-slick-weight* 1)
 
 (defparameter *max-generations-per-guess* 100)
 (defparameter *max-eligible-codes-per-guess* 100)
@@ -38,11 +39,23 @@
     when (equal individual guess)
     sum -0.5))
 
+(defun response-similarity-score (individual colors guesses responses)
+  (loop
+    for guess in guesses
+    for response in responses
+    for response-for-individual = (my-process-guess colors individual guess)
+    for diff-bulls = (abs (- (first response) (first response-for-individual)))
+    for diff-cows = (abs (- (second response) (second response-for-individual)))
+    for slick = (* (length individual) (length guesses) *fitness-slick-weight*)
+    for score = (- slick diff-cows diff-bulls)
+    sum score))
+
 (defun fitness (individual colors guesses responses)
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
   ; For now, just a count of how many guess-response pairs it matches
   (+
-    (consistentcy-score individual colors guesses responses)
+    ; (consistentcy-score individual colors guesses responses)
+    (response-similarity-score individual colors guesses responses)
     ; (previous-guess-penalty individual guesses)))
     0))
 
@@ -247,5 +260,6 @@
     (
       (eligible-codes (generate-eligible-codes board colors *guesses* *responses*))
       (guess (maximize-minimum-codes-eliminated colors eligible-codes eligible-codes)))
+      ; (guess (fittest-individual (genetic-algorithm (initial-population board colors) colors *guesses* *responses*) colors *guesses* *responses*)))
     (push guess *guesses*)
     guess))
