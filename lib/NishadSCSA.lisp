@@ -7,7 +7,24 @@
 ;;compare answers agaisnt that SCSA
 
 
-	 
+; TODO: finish me
+(defun matches-scsa (scsa-name code)
+  (cond
+    (
+      (equal scsa-name 'two-color)
+      (if (2-color-checker-p code) 1 0))
+    (
+      (equal scsa-name 'prefer-fewer)
+      (score-prefer-fewer code))
+    (t 0)))
+
+; TODO: finish me
+(defun score-prefer-fewer (code)
+  (let ((number-of-colors (remove-duplicates code)))
+    (cond
+      ((= number-of-colors 1) 0.5)
+      ((= number-of-colors 2) 0.25)
+      (t 0))))
 
 ;;TODO Convert the checkers into predicates so we can use them to determine our guess follows the SCSA
 
