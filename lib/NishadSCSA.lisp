@@ -450,10 +450,22 @@
 		 *less-than-three*
 		 *preference-fewer*
 		 *random-SCSA*))
-	(confidence nil)
-	(value 0))
-    (setf value (float (/ *AB-SCSA* sum)))
-    (setf confidence (make-list 1 :initial-element ('(*mystery-1*) (value))))
+	(confidence nil))
+    (setf confidence (list (cons 'AB-checker-p (list (float (/ *AB-SCSA* sum))))
+			   (cons 'mystery-4-checker-p (list (float (/ *mystery-4* sum))))
+			   (cons '2-color-alt-checker-p (list (float (/ *2-color-alt-SCSA* sum))))
+			   (cons '2-color-checker-p (list (float (/ *2-color-SCSA* sum))))
+			   (cons 'mystery-1-checker-p (list (float (/ *mystery-1* sum))))
+			   (cons 'mystery-3-checker-p (list (float (/ *mystery-3* sum))))
+			   (cons '*preference-fewer* (list (float (/ *preference-fewer* sum))))
+			   (cons '*mystery-2* (list (float (/ *mystery-2* sum))))
+			   (cons '*mystery-5* (list (float (/ *mystery-5* sum))))
+			   (cons '*at-most-once-checker-p (list (float (/ *at-most-once* sum))))
+			   (cons 'first-last-checker-p (list (float (/ *first-last* sum))))
+			   (cons 'less-than-three-checker-p (list (float (/ *less-than-three* sum))))
+			   (cons '*random-SCSA* (list (float (/ *random-SCSA* sum))))))
+    (setf *SCSA-confidence* confidence)))
+			   
 
 
 
