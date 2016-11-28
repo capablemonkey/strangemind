@@ -293,6 +293,7 @@
 
 
 ;;SCSA-Matcher assumes you have mystery-1 and mystery-4 patterns set
+;;TODO add paramater, guessNumber which will be used for the 3 ratio code as the increment number.
 (defun SCSA-Matcher (guess)
   (progn (convert-guess guess)
 	 (if (mystery-1-checker-p *converted-to-generic*) (setf *mystery-1* (+ *mystery-1* 1)))
@@ -412,12 +413,47 @@
 ;;call reset function when games = 1
 
 
+;;make tuples of name of scsa and confidence
+
+
+ ;*mystery-1* *mystery-2*  *mystery-3*  *mystery-4*  *mystery-5*  *2-color-SCSA* *AB-SCSA*  *2-color-alt-SCSA* 
+ ;*at-most-once*  
+
+; *first-last*
+ ;*less-than-three* 
+
+ ;*preference-fewer*
+ ;*random-SCSA* 
+
+;order for subsets
+;AB-list, mystery-4, alternate-2colors, 2-color-list  
+
+;mystery-1, mystery3, , prefer fewer,
+
+;mystery-2, mystery-5, at-most-once, first-last, less-than-three, random
 
 
 
+(defparameter *SCSA-confidence* nil)
 
-
-
+(defun get-confidence ()
+  (let ((sum (+  *mystery-1*
+		 *mystery-2*
+		 *mystery-3*
+		 *mystery-4*
+		 *mystery-5*
+		 *2-color-SCSA*
+		 *AB-SCSA*
+		 *2-color-alt-SCSA*
+		 *at-most-once*
+		 *first-last*
+		 *less-than-three*
+		 *preference-fewer*
+		 *random-SCSA*))
+	(confidence nil)
+	(value 0))
+    (setf value (float (/ *AB-SCSA* sum)))
+    (setf confidence (make-list 1 :initial-element ('(*mystery-1*) (value))))
 
 
 
