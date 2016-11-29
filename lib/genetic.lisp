@@ -28,16 +28,12 @@
   ; TODO: ensure there are no duplicate individuals
   (generate-n-unique *population-size* (lambda () (insert-colors board colors))))
 
+; Count the number of guess-response pairs that the individual is consistent with
 (defun consistentcy-score (individual colors guesses responses)
   (loop for guess in guesses
     for response in responses
     when (equal response (my-process-guess colors individual guess))
     sum 1))
-
-(defun previous-guess-penalty (individual guesses)
-  (loop for guess in guesses
-    when (equal individual guess)
-    sum -0.5))
 
 (defun response-similarity-score (individual colors guesses responses)
   (loop
@@ -46,17 +42,15 @@
     for response-for-individual = (my-process-guess colors individual guess)
     for diff-bulls = (abs (- (first response) (first response-for-individual)))
     for diff-cows = (abs (- (second response) (second response-for-individual)))
-    for slick = (* (length individual) (length guesses) *fitness-slick-weight*)
+    for slick = (* (length individual) *fitness-slick-weight*)
     for score = (- slick diff-cows diff-bulls)
     sum score))
 
 (defun fitness (individual colors guesses responses)
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
-  ; For now, just a count of how many guess-response pairs it matches
   (+
     ; (consistentcy-score individual colors guesses responses)
     (response-similarity-score individual colors guesses responses)
-    ; (previous-guess-penalty individual guesses)))
     0))
 
 (defun population-by-fitness (population colors guesses responses)

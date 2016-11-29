@@ -15,6 +15,26 @@
     (length (initial-population 4 '(A B C D E F)))
     "Ensure initial population is of size *population-size*")
 
+  (is
+    ; 4 + 4 + 4
+    12
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (1 0) (0 0)))
+    "response-similarity-score should return a correct score")
+
+  (is
+    ; 4 + 3 + 0
+    7
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (0 0) (4 0)))
+    "response-similarity-score should return a correct score")
+
   (subtest "Test fitness function"
     (is
       3
@@ -34,16 +54,16 @@
 
   (is
     4
-    (length (reproduce '(A A A A) '(F F F F)))
-    "reproduce returns offspring of the correct length")
+    (length (1-point-crossover '(A A A A) '(F F F F)))
+    "1-point-crossover returns offspring of the correct length")
 
   (ok
-    (let ((child (reproduce '(A B C D) '(E F G H))))
+    (let ((child (1-point-crossover '(A B C D) '(E F G H))))
       (or
         (equal child '(A F G H))
         (equal child '(A B G H))
         (equal child '(A B C H))))
-    "reproduce returns a valid child")
+    "1-point-crossover returns a valid child")
 
   (is
     4
