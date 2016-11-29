@@ -190,8 +190,10 @@
 ;;Use mystery-4 code
 
 (defun 2-color-alt-checker-p (guess)
-  (if (equal *mystery-4-pattern* guess) T))
-
+  (let ((mystery-4-pattern nil) (converted-guess nil))
+    (setf mystery-4-pattern (mystery-4-create-pattern (length guess)))
+    (setf converted-guess (convert-guess guess))
+    (if (equal mystery-4-pattern converted-guess) T)))
 
 ;;a list in which colors appear at most once
 ;;remove duplicates in a guess and see if length changes, if not then true
