@@ -38,7 +38,7 @@
      (if (mystery-3-checker-p code) 1 0))
     (
      (equal scsa-name 'mystery-4)
-     (if (myster-4-checker-p code) 1 0))
+     (if (mystery-4-checker-p code) 1 0))
     (
      (equal scsa-name 'mystery-5)
      (score-mystery-5 code))   
@@ -64,7 +64,7 @@
       ((= number-of-colors 3) 0.04)
       ((= number-of-colors 4) 0.08)
       ((= number-of-colors 5) 0.04)
-      ((= number-of-colors 6) 0.00)
+      ((= number-of-colors 6) 0)
       (t 0))))
 
 (defun score-mystery-5 (code)
@@ -74,8 +74,8 @@
       ((= number-of-colors 2) 0.06)
       ((= number-of-colors 3) 0.45)
       ((= number-of-colors 4) 0.49)
-      ((= number-of-colors 5) 0.00)
-      ((= number-of-colors 6) 0.00)
+      ((= number-of-colors 5) 0)
+      ((= number-of-colors 6) 0)
       (t 0))))
 
 
@@ -204,7 +204,7 @@
 ;;first and last are same
 ;;just check first and last of guess to be equal
 (defun first-last-checker-p (guess)
-  (if (equal (first guess) (last guess)) T))
+  (if (equal (first guess) (first (last guess))) T))
 
 
 ;;Fewer colors (2 or 3)

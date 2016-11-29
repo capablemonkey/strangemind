@@ -72,9 +72,9 @@
 	   (is 0.01
 	       (score-prefer-fewer '(A C F D B E))
 	       "score-prefer-fewer returns 0.01 for (A C F D B E)")
-	   (is 0.0
+	   (is 0
 	       (score-prefer-fewer '(A C F D B E G))
-	       "score-prefer-fewer return 0.0 for (A C F D B E G)"))
+	       "score-prefer-fewer return 0 for (A C F D B E G)"))
 
 
   (is t
@@ -101,9 +101,9 @@
 	   (is 0.04
 	       (score-mystery-2 '(F R I A C))
 	       "score-mystery-2 returns .04 for (F R I A C)")
-	   (is 0.0
+	   (is 0
 	       (score-mystery-2 '(A C F D B E))
-	       "score-mystery-2 returns 0.0 for (A C F D B E)"))
+	       "score-mystery-2 returns 0 for (A C F D B E)"))
   (is t
       (mystery-3-checker-p '(A A C B A B C C B))
       "mystery-3-checker-p returns T for (A A C B A B C C B)")
@@ -142,12 +142,12 @@
 	   (is 0.49
 	       (score-mystery-5 '(E F A G F))
 	       "score-mystery-5 returns 0.49 for (E F A G F)")
-	   (is 0.0
+	   (is 0
 	       (score-mystery-5 '(F R I A C))
-	       "score-mystery-5 returns 0.00 for (F R I A C)")
-	   (is 0.0
+	       "score-mystery-5 returns 0 for (F R I A C)")
+	   (is 0
 	       (score-mystery-5 '(A C F D B E))
-	       "score-mystery-5 returns 0.0 for (A C F D B E)"))
+	       "score-mystery-5 returns 0 for (A C F D B E)"))
 
   (subtest "Testing matches-scsa"
 	   (is 1
@@ -218,7 +218,7 @@
 	       (matches-scsa 'mystery-2 '(F F G F G G))
 	       "matches-scsa 'mystery-2 '(F F G F G G) returned 0.39")
 
-	   (is 0.0
+	   (is 0
 	       (matches-scsa 'mystery-2 '(E A B D F G))	      
 	       "matches-scsa 'mystery-2 '(E A B D F G) returned 0")
 
