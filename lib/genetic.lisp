@@ -72,13 +72,13 @@
 (defun prune-already-guessed (population guesses)
   (set-difference population guesses :test 'equal))
 
+; returns tuple of fittest-individual and score ((A B C D) 300)
 (defun fittest-individual (population colors guesses responses)
   (first
-    (first
-      (sort
-        (population-by-fitness (prune-already-guessed population guesses) colors guesses responses)
-        #'>
-        :key #'second))))
+    (sort
+      (population-by-fitness (prune-already-guessed population guesses) colors guesses responses)
+      #'>
+      :key #'second)))
 
 (defun random-selection (population-by-relative-fitness)
   "Chooses a individual from the population with a bias for fitness"
@@ -209,10 +209,11 @@
     (lambda (individual) (eligible-p individual colors guesses responses))
     population))
 
-(defun generate-most-fit-individuals (board colors guesses responses)
+(defun most-fit-over-multiple-generations (board colors guesses responses)
   (let
     (
-      (all-individuals nil)
+      (most-fit '(nil 0))
+      (fittest-in-generation nil)
       (population (initial-population board colors)))
     (loop
       with generation-counter = 0
@@ -220,24 +221,11 @@
       do
         (progn
           (setf population (genetic-algorithm population colors guesses responses))
-          (setf all-individuals
-            (append
-              all-individuals
-              population)))
+          (setf fittest-in-generation (fittest-individual population colors guesses responses))
+          (if (> (second fittest-in-generation) (second most-fit))
+            (setf most-fit fittest-in-generation)))
       do (incf generation-counter 1))
-    (mapcar
-      #'first
-      (subseq
-        (sort
-          (population-by-fitness
-            (remove-duplicates all-individuals :test 'equal)
-            colors
-            guesses
-            responses)
-          #'>
-          :key #'second)
-        0
-        *n-most-fit-per-guess*))))
+    (first most-fit)))
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors SCSA last-response)
@@ -255,8 +243,6 @@
   (push (firstn 2 last-response) *responses*)
 
   (let*
-    (
-      (eligible-codes (generate-most-fit-individuals board colors *guesses* *responses*))
-      (guess (maximize-minimum-codes-eliminated colors eligible-codes eligible-codes)))
+    ((guess (most-fit-over-multiple-generations board colors *guesses* *responses*)))
     (push guess *guesses*)
     guess))
