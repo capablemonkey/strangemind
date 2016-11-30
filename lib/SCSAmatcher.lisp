@@ -1,50 +1,7 @@
 ;;;
 ;;; SCSA-Matcher
 ;;;
-		
 
-; TODO: ADD random?
-(defun matches-scsa (scsa-name code)
-  (cond
-    (
-      (equal scsa-name 'two-color)
-      (if (2-color-checker-p code) 1 0))
-    (
-      (equal scsa-name 'prefer-fewer)
-     (score-prefer-fewer code))
-    (
-     (equal scsa-name 'ab-color)
-     (if (AB-checker-p code) 1 0))
-    (
-     (equal scsa-name 'two-color-alternating)
-     (if (2-color-alt-checker-p code) 1 0))
-    (
-     (equal scsa-name 'only-once)
-     (if (at-most-once-checker-p code) 1 0))
-    (
-     (equal scsa-name 'first-and-last)
-     (if (first-last-checker-p code) 1 0))
-    (
-     (equal scsa-name 'usually-fewer)
-     (if (less-than-three-checker-p code) 1 0))
-    (
-     (equal scsa-name 'mystery-1)
-     (if (mystery-1-checker-p code) 1 0))
-    (
-     (equal scsa-name 'mystery-2)
-     (score-mystery-2 code))
-    (
-     (equal scsa-name 'mystery-3)
-     (if (mystery-3-checker-p code) 1 0))
-    (
-     (equal scsa-name 'mystery-4)
-     (if (mystery-4-checker-p code) 1 0))
-    (
-     (equal scsa-name 'mystery-5)
-     (score-mystery-5 code))   
-    (t 0)))
-
-; TODO: finish me
 (defun score-prefer-fewer (code)
   (let ((number-of-colors (length (remove-duplicates code))))
     (cond
@@ -219,3 +176,43 @@
 ;; 8% chance to have 4 colors
 ;; 3% chance to have 5 colors
 ;; 1% chance to have 6 colors
+
+(defun matches-scsa (scsa-name code)
+  (cond
+    (
+      (equal scsa-name 'two-color)
+      (if (2-color-checker-p code) 1 0))
+    (
+      (equal scsa-name 'prefer-fewer)
+     (score-prefer-fewer code))
+    (
+     (equal scsa-name 'ab-color)
+     (if (AB-checker-p code) 1 0))
+    (
+     (equal scsa-name 'two-color-alternating)
+     (if (2-color-alt-checker-p code) 1 0))
+    (
+     (equal scsa-name 'only-once)
+     (if (at-most-once-checker-p code) 1 0))
+    (
+     (equal scsa-name 'first-and-last)
+     (if (first-last-checker-p code) 1 0))
+    (
+     (equal scsa-name 'usually-fewer)
+     (if (less-than-three-checker-p code) 1 0))
+    (
+     (equal scsa-name 'mystery-1)
+     (if (mystery-1-checker-p code) 1 0))
+    (
+     (equal scsa-name 'mystery-2)
+     (score-mystery-2 code))
+    (
+     (equal scsa-name 'mystery-3)
+     (if (mystery-3-checker-p code) 1 0))
+    (
+     (equal scsa-name 'mystery-4)
+     (if (mystery-4-checker-p code) 1 0))
+    (
+     (equal scsa-name 'mystery-5)
+     (score-mystery-5 code))   
+    (t 0)))
