@@ -86,15 +86,22 @@
   "Chooses a individual from the population with a bias for fitness"
   (pick-with-probability population-by-relative-fitness))
 
-;Used by reproduce 2. and inversion.
-(defun get-two-indexes (individual)
-  "Generates list with 2 random indexes in individual. First is smaller than second."
+(defun random-from-1-to (n)
+  "Returns a random number between 1 and n, inclusive"
+  (1+ (random (1- n))))
+
+(defun coin-flip ()
+  "Returns T or NIL at random"
+  (= 0 (random 2)))
+
+(defun random-range-for (individual)
+  "Return a list with 2 random indices in a list. First index is smaller than the second."
   (let
     (
-      (index1 (1+ (random (1- (length individual)))))
-      (index2 (1+ (random (1- (length individual))))))
+      (index1 (random-from-1-to (length individual)))
+      (index2 (random-from-1-to (length individual))))
     (loop while (= index1 index2) do
-      (setf index1 (1+ (random (1- (length individual))))))
+      (setf index1 (random-from-1-to (length individual))))
 
     (if (< index1 index2)
         (list index1 index2)
@@ -105,11 +112,8 @@
 ; 1 Point Crossover
 (defun 1-point-crossover (parent-a parent-b)
   "Returns a single individual offspring from two individuals using 1-point crossover"
-  (let
-    (
-      (crossover-index (1+ (random (1- (length parent-a)))))
-      (coin-flip (random 2)))
-    (if (= coin-flip 0)
+  (let ((crossover-index (random-from-1-to (length parent-a))))
+    (if (coin-flip)
       (append
         (subseq parent-a 0 crossover-index)
         (subseq parent-b crossover-index (length parent-b)))
@@ -122,11 +126,8 @@
 ; 2 Point Crossover
 (defun 2-point-crossover (parent-a parent-b)
   "Returns a single individual offspring from two individuals using 2-point crossover"
-  (let
-    (
-      (two-index (get-two-indexes parent-a))
-      (coin-flip (random 2)))
-    (if (= coin-flip 0)
+  (let ((two-index (random-range-for parent-a)))
+    (if (coin-flip)
        (append
          (subseq parent-a 0 (first two-index))
          (subseq parent-b (first two-index) (second two-index))
@@ -153,13 +154,13 @@
 
 (defun permutate (individual)
   "Permutate the individual"
-  (let ((two-index (get-two-indexes individual)))
+  (let ((two-index (random-range-for individual)))
     (rotatef (nth (first two-index) individual) (nth (second two-index) individual))
     individual))
 
 (defun inversion (individual)
   "Invert the individual"
-  (let ((two-index (get-two-indexes individual)))
+  (let ((two-index (random-range-for individual)))
     (append
       (subseq individual 0 (first two-index))
       (reverse (subseq individual (first two-index) (second two-index)))
