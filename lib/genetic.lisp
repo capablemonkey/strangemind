@@ -1,5 +1,4 @@
 (load (merge-pathnames "utility.lisp" *load-truename*))
-(load (merge-pathnames "knuth.lisp" *load-truename*))
 
 (defvar *guesses* nil)
 (defvar *responses* nil)
