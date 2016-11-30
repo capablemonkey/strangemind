@@ -1,17 +1,16 @@
-(load (merge-pathnames "utility.lisp" *load-truename*))
-(load (merge-pathnames "knuth.lisp" *load-truename*))
 
 (defvar *guesses* nil)
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 150)
-(defparameter *mutation-rate* 0.03)
-(defparameter *permutation-rate* 0.03)
-(defparameter *inversion-rate* 0.03)
+(defparameter *population-size* 100)
+(defparameter *mutation-rate* 0.10)
+(defparameter *permutation-rate* 0.20)
+(defparameter *inversion-rate* 0.10)
 (defparameter *fitness-slick-weight* 1)
+(defparameter *scsa-consistency-multiplier* 0.5)
 
-(defparameter *generations-per-guess* 100)
+(defparameter *generations-per-guess* 50)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
 (defparameter *2-point-crossover-rate* 0.5) ; 1-p
@@ -38,21 +37,23 @@
     for score = (- slick diff-cows diff-bulls)
     sum score))
 
-(defun fitness (individual colors guesses responses)
+(defun fitness (individual colors guesses responses scsa-name)
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
   (+
     (response-similarity-score individual colors guesses responses)
+    ; (* (matches-scsa scsa-name individual) (length individual) (length guesses) *scsa-consistency-multiplier*)
+     (* (matches-scsa scsa-name individual) *scsa-consistency-multiplier* )
     0))
 
-(defun population-by-fitness (population colors guesses responses)
+(defun population-by-fitness (population colors guesses responses scsa-name)
   (mapcar
-    (lambda (individual) (list individual (fitness individual colors guesses responses)))
+    (lambda (individual) (list individual (fitness individual colors guesses responses scsa-name)))
     population))
 
-(defun population-by-relative-fitness (population colors guesses responses)
+(defun population-by-relative-fitness (population colors guesses responses scsa-name)
   (let*
     (
-      (individuals-to-fitness (population-by-fitness population colors guesses responses))
+      (individuals-to-fitness (population-by-fitness population colors guesses responses scsa-name))
       (sum-of-fitnesses (reduce #'+ (mapcar #'second individuals-to-fitness))))
     (mapcar
       (lambda (individual-to-fitness)
@@ -61,12 +62,14 @@
       individuals-to-fitness)))
 
 ; returns tuple of fittest-individual and score ((A B C D) 300)
-(defun fittest-individual (population colors guesses responses)
-  (first
-    (sort
-      (population-by-fitness population colors guesses responses)
-      #'>
-      :key #'second)))
+(defun fittest-individual (population colors guesses responses scsa-name)
+  (let ( (query-population (population-by-fitness population colors guesses responses scsa-name))
+  	     (fittest '(nil 0)))
+  	(loop
+    for individual in query-population
+    do (if (> (second individual) (second fittest))
+    	(setf fittest individual)))
+	fittest))
 
 (defun random-selection (population-by-relative-fitness)
   "Chooses a individual from the population with a bias for fitness"
@@ -171,10 +174,10 @@
     (inversion individual)
     individual))
 
-(defun genetic-algorithm (population colors guesses responses)
+(defun genetic-algorithm (population colors guesses responses scsa-name)
   "Given a population, return a new generation by breeding."
   (let
-    ((current-population-by-relative-fitness (population-by-relative-fitness population colors guesses responses)))
+    ((current-population-by-relative-fitness (population-by-relative-fitness population colors guesses responses scsa-name)))
     (loop for _ in population
       ; TODO: should we allow parents to be identical/self?
       for parent-a = (random-selection current-population-by-relative-fitness)
@@ -188,7 +191,7 @@
           (rand-colors (length possibly-inverted-child) colors)
           possibly-inverted-child))))
 
-(defun most-fit-over-multiple-generations (board colors guesses responses)
+(defun most-fit-over-multiple-generations (board colors guesses responses scsa-name)
   (let
     (
       (most-fit '(nil 0))
@@ -199,17 +202,15 @@
       until (>= generation-counter *generations-per-guess*)
       do
         (progn
-          (setf population (genetic-algorithm population colors guesses responses))
-          (setf fittest-in-generation (fittest-individual population colors guesses responses))
+          (setf population (genetic-algorithm population colors guesses responses scsa-name))
+          (setf fittest-in-generation (fittest-individualI population colors guesses responses scsa-name))
           (if (> (second fittest-in-generation) (second most-fit))
             (setf most-fit fittest-in-generation)))
       do (incf generation-counter 1))
     (first most-fit)))
 
 ; Genetic team.  Interfaces with the game
-(defun Genetic (board colors SCSA last-response)
-  (declare (ignore SCSA))
-
+(defun Genetic (board colors scsa-name last-response)
   ; if first move, reset state and give a guess that includes all the colors
   (when (null last-response)
     (setf *guesses* nil)
@@ -222,6 +223,6 @@
   (push (firstn 2 last-response) *responses*)
 
   (let*
-    ((guess (most-fit-over-multiple-generations board colors *guesses* *responses*)))
+    ((guess (most-fit-over-multiple-generations board colors *guesses* *responses* scsa-name)))
     (push guess *guesses*)
     guess))
