@@ -27,13 +27,6 @@
   ; TODO: ensure there are no duplicate individuals
   (generate-n-unique *population-size* (lambda () (insert-colors board colors))))
 
-; Count the number of guess-response pairs that the individual is consistent with
-(defun consistentcy-score (individual colors guesses responses)
-  (loop for guess in guesses
-    for response in responses
-    when (equal response (my-process-guess colors individual guess))
-    sum 1))
-
 (defun response-similarity-score (individual colors guesses responses)
   (loop
     for guess in guesses
@@ -48,7 +41,6 @@
 (defun fitness (individual colors guesses responses)
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
   (+
-    ; (consistentcy-score individual colors guesses responses)
     (response-similarity-score individual colors guesses responses)
     0))
 
@@ -68,14 +60,11 @@
         (list (first individual-to-fitness) (safe-division (second individual-to-fitness) (float sum-of-fitnesses))))
       individuals-to-fitness)))
 
-(defun prune-already-guessed (population guesses)
-  (set-difference population guesses :test 'equal))
-
 ; returns tuple of fittest-individual and score ((A B C D) 300)
 (defun fittest-individual (population colors guesses responses)
   (first
     (sort
-      (population-by-fitness (prune-already-guessed population guesses) colors guesses responses)
+      (population-by-fitness population colors guesses responses)
       #'>
       :key #'second)))
 
@@ -198,15 +187,6 @@
         (if (not (equal (find possibly-inverted-child population :test #'equal) nil))
           (rand-colors (length possibly-inverted-child) colors)
           possibly-inverted-child))))
-
-(defun eligible-p (individual colors guesses responses)
-  ; TODO: can use `every` function which may be more efficient than map
-  (equal (length guesses) (consistentcy-score individual colors guesses responses)))
-
-(defun eligible-individuals (population colors guesses responses)
-  (remove-if-not
-    (lambda (individual) (eligible-p individual colors guesses responses))
-    population))
 
 (defun most-fit-over-multiple-generations (board colors guesses responses)
   (let
