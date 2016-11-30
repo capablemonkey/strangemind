@@ -15,6 +15,26 @@
     (length (initial-population 4 '(A B C D E F)))
     "Ensure initial population is of size *population-size*")
 
+  (is
+    ; 4 + 4 + 4
+    12
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (1 0) (0 0)))
+    "response-similarity-score should return a correct score")
+
+  (is
+    ; 4 + 3 + 0
+    7
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (0 0) (4 0)))
+    "response-similarity-score should return a correct score")
+
   (subtest "Test fitness function"
     (is
       3
@@ -34,16 +54,16 @@
 
   (is
     4
-    (length (reproduce '(A A A A) '(F F F F)))
-    "reproduce returns offspring of the correct length")
+    (length (1-point-crossover '(A A A A) '(F F F F)))
+    "1-point-crossover returns offspring of the correct length")
 
   (ok
-    (let ((child (reproduce '(A B C D) '(E F G H))))
+    (let ((child (1-point-crossover '(A B C D) '(E F G H))))
       (or
         (equal child '(A F G H))
         (equal child '(A B G H))
         (equal child '(A B C H))))
-    "reproduce returns a valid child")
+    "1-point-crossover returns a valid child")
 
   (is
     4
@@ -105,13 +125,27 @@
       "fittest-individual selects the most fit individual")
 
     (is
-      '(G D F B)
-      (fittest-individual
-        population
+      (length population)
+      (length (genetic-algorithm population *test-colors* guesses responses))
+      "genetic-algorithm returns a new population of the same size as the input population")
+
+    (is
+      T
+      (eligible-p
+        '(A B C D)
         *test-colors*
-        (append '((A B C D)) guesses)
-        (append '((4 0)) responses))
-      "fittest-individual does not return an already guessed individual")
+        '((A A A A) (B B B B) (A F F D))
+        '((1 0) (1 0) (2 0)))
+      "eligible-p returns true for eligible codes")
+
+    (is
+      NIL
+      (eligible-p
+        '(A B C D)
+        *test-colors*
+        '((A A A A) (B B B B) (A F F D))
+        '((0 0) (3 0) (0 2)))
+      "eligible-p returns NIL for ineligible codes")
 
     (ok
       (let*
