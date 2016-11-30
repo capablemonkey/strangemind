@@ -10,7 +10,7 @@
 (defparameter *permutation-rate* 0.03)
 (defparameter *inversion-rate* 0.03)
 (defparameter *fitness-slick-weight* 1)
-(defparameter *scsa-consistency-bonus* 10)
+(defparameter *scsa-consistency-multiplier* 0.25)
 
 (defparameter *generations-per-guess* 100)
 
@@ -43,7 +43,8 @@
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
   (+
     (response-similarity-score individual colors guesses responses)
-    (* (matches-scsa scsa-name individual) *scsa-consistency-bonus*)
+    (* (matches-scsa scsa-name individual) (length individual) (length guesses) *scsa-consistency-multiplier*)
+    ; (* (matches-scsa scsa-name individual) 100)
     0))
 
 (defun population-by-fitness (population colors guesses responses scsa-name)
