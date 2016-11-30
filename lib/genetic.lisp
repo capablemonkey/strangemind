@@ -203,7 +203,7 @@
       do
         (progn
           (setf population (genetic-algorithm population colors guesses responses scsa-name))
-          (setf fittest-in-generation (fittest-individualI population colors guesses responses scsa-name))
+          (setf fittest-in-generation (fittest-individual population colors guesses responses scsa-name))
           (if (> (second fittest-in-generation) (second most-fit))
             (setf most-fit fittest-in-generation)))
       do (incf generation-counter 1))
