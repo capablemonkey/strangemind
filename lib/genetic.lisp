@@ -12,7 +12,7 @@
 (defparameter *fitness-slick-weight* 1)
 
 (defparameter *max-generations-per-guess* 100)
-(defparameter *max-eligible-codes-per-guess* 100)
+(defparameter *n-most-fit-per-guess* 100)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
 (defparameter *2-point-crossover-rate* 0.5) ; 1-p
@@ -209,31 +209,35 @@
     (lambda (individual) (eligible-p individual colors guesses responses))
     population))
 
-(defun generate-eligible-codes (board colors guesses responses)
+(defun generate-most-fit-individuals (board colors guesses responses)
   (let
     (
-      (eligible-codes nil)
+      (all-individuals nil)
       (population (initial-population board colors)))
     (loop
       with generation-counter = 0
-      until
-        (or
-          (>= (length eligible-codes) *max-eligible-codes-per-guess*)
-          (>= generation-counter *max-generations-per-guess*))
+      until (>= generation-counter *max-generations-per-guess*)
       do
         (progn
           (setf population (genetic-algorithm population colors guesses responses))
-          (setf eligible-codes
-            (remove-duplicates
-              (append
-                eligible-codes
-                (eligible-individuals population colors guesses responses))
-              :test 'equal)))
+          (setf all-individuals
+            (append
+              all-individuals
+              population)))
       do (incf generation-counter 1))
-    (format t "~%Eligible codes: ~a" (length eligible-codes))
-    (if (> (length eligible-codes) *max-eligible-codes-per-guess*)
-      (subseq eligible-codes 0 *max-eligible-codes-per-guess*)
-      eligible-codes)))
+    (mapcar
+      #'first
+      (subseq
+        (sort
+          (population-by-fitness
+            (remove-duplicates all-individuals :test 'equal)
+            colors
+            guesses
+            responses)
+          #'>
+          :key #'second)
+        0
+        *n-most-fit-per-guess*))))
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors SCSA last-response)
@@ -252,8 +256,7 @@
 
   (let*
     (
-      (eligible-codes (generate-eligible-codes board colors *guesses* *responses*))
+      (eligible-codes (generate-most-fit-individuals board colors *guesses* *responses*))
       (guess (maximize-minimum-codes-eliminated colors eligible-codes eligible-codes)))
-      ; (guess (fittest-individual (genetic-algorithm (initial-population board colors) colors *guesses* *responses*) colors *guesses* *responses*)))
     (push guess *guesses*)
     guess))
