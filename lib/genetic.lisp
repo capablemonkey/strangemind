@@ -11,8 +11,7 @@
 (defparameter *inversion-rate* 0.03)
 (defparameter *fitness-slick-weight* 1)
 
-(defparameter *max-generations-per-guess* 100)
-(defparameter *n-most-fit-per-guess* 100)
+(defparameter *generations-per-guess* 100)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
 (defparameter *2-point-crossover-rate* 0.5) ; 1-p
@@ -217,7 +216,7 @@
       (population (initial-population board colors)))
     (loop
       with generation-counter = 0
-      until (>= generation-counter *max-generations-per-guess*)
+      until (>= generation-counter *generations-per-guess*)
       do
         (progn
           (setf population (genetic-algorithm population colors guesses responses))
