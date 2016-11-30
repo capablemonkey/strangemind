@@ -5,14 +5,14 @@
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 150)
-(defparameter *mutation-rate* 0.03)
-(defparameter *permutation-rate* 0.03)
-(defparameter *inversion-rate* 0.03)
+(defparameter *population-size* 100)
+(defparameter *mutation-rate* 0.10)
+(defparameter *permutation-rate* 0.20)
+(defparameter *inversion-rate* 0.10)
 (defparameter *fitness-slick-weight* 1)
 (defparameter *scsa-consistency-multiplier* 0.25)
 
-(defparameter *generations-per-guess* 100)
+(defparameter *generations-per-guess* 50)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
 (defparameter *2-point-crossover-rate* 0.5) ; 1-p
@@ -44,7 +44,6 @@
   (+
     (response-similarity-score individual colors guesses responses)
     (* (matches-scsa scsa-name individual) (length individual) (length guesses) *scsa-consistency-multiplier*)
-    ; (* (matches-scsa scsa-name individual) 100)
     0))
 
 (defun population-by-fitness (population colors guesses responses scsa-name)
@@ -65,11 +64,17 @@
 
 ; returns tuple of fittest-individual and score ((A B C D) 300)
 (defun fittest-individual (population colors guesses responses scsa-name)
-  (first
-    (sort
-      (population-by-fitness population colors guesses responses scsa-name)
-      #'>
-      :key #'second)))
+  (let
+    (
+      (query-population (population-by-fitness population colors guesses responses scsa-name))
+      (fittest '(nil 0)))
+    (loop
+      for individual in query-population
+      do
+        (if
+          (> (second individual) (second fittest))
+          (setf fittest individual)))
+    fittest))
 
 (defun random-selection (population-by-relative-fitness)
   "Chooses a individual from the population with a bias for fitness"
