@@ -110,7 +110,7 @@
 (Mastermind *pegs* *colors* nil)
 
 ; Base case:
-(defparameter *tournaments-per-trial* 1)
+(defparameter *tournaments-per-trial* 5)
 (defparameter *default-population* 150)
 (defparameter *default-generations* 50)
 (defparameter *default-mutation* 0.03)
