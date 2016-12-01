@@ -5,10 +5,10 @@
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 100)
-(defparameter *mutation-rate* 0.10)
-(defparameter *permutation-rate* 0.20)
-(defparameter *inversion-rate* 0.10)
+(defparameter *population-size* 150)
+(defparameter *mutation-rate* 0.03)
+(defparameter *permutation-rate* 0.03)
+(defparameter *inversion-rate* 0.03)
 (defparameter *fitness-slick-weight* 1)
 (defparameter *scsa-consistency-multiplier* 0.25)
 

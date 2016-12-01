@@ -152,9 +152,12 @@
      ; do (format t "~%score ~a" response)
      ; else do (format t "~%Invalid entry. Round over.")
      until (or win (null response) (= i game-cutoff) time-is-up)
-     finally (return (cond (time-is-up '(0 0))
-         ((null response) nil)
-         (t response)))))
+     finally
+      (return
+        (cond
+          (time-is-up '(0 0))
+          ((null response) nil)
+          (t response)))))
 
 ;Plays tournament-length rounds against one team
 ;a win is worth more if it takes fewer guesses (division by square root of number of guesses)
