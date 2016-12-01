@@ -43,7 +43,7 @@
       (total-lost (reduce #'+ games-lost))
       (total-failed (reduce #'+ games-failed))
       (avg-time-per-tournament (average tournament-times))
-      (avg-time-per-game (/ avg-time-per-tournament total-played 1000)))
+      (avg-time-per-game (/ avg-time-per-tournament 100 1000)))
     (format t "~%*** Benchmark ~a against board with ~a colors and ~a pegs:"
       team
       (number-of-colors *Mastermind*)
