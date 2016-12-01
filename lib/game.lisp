@@ -133,7 +133,7 @@
   (declare (special *Mastermind*)) 
   (loop with game-cutoff = (game-cutoff self)
      with start-time = (get-internal-run-time)
-     with stop-time = (+ 1000000 start-time)
+     with stop-time = (+ 10000000 start-time)
      with board = (board *Mastermind*)
      with colors = (colors *Mastermind*)
      with SCSA = (SCSA *Mastermind*)
