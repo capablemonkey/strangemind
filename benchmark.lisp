@@ -17,9 +17,9 @@
     two-color-alternating
     first-and-last
     usually-fewer
-    prefer-fewer
+    prefer-fewer))
     ; only-once ; WARNING: this SCSA requires the board size to equal the number of colors
-    ))
+    
 
 (defun random-scsa ()
   (nth (random (length *SCSA-list*)) *SCSA-list*))
@@ -32,7 +32,7 @@
     (
       (results ; return values from running tournaments
         (mapcar ; TODO: can we parallelize each tournament?
-          (lambda (_) (measure-time (lambda () (play-tournament *Mastermind* team (random-scsa) 100))))
+          (lambda (_) (measure-time (lambda () (play-tournament *Mastermind* team 'insert-colors 100))))
           (make-list trials)))
       (scores (mapcar (lambda (result) (scoring-function result)) results))
       (games-lost (mapcar #'second results))
