@@ -6,13 +6,14 @@
 
 ; TODO: scale population size with # of pegs and # of colors
 (defparameter *population-size* 150)
-(defparameter *mutation-rate* 0.03)
-(defparameter *permutation-rate* 0.03)
-(defparameter *inversion-rate* 0.03)
+(defparameter *mutation-rate* 0.01)
+(defparameter *permutation-rate* 0.01)
+(defparameter *inversion-rate* 0.01)
 (defparameter *fitness-slick-weight* 1)
 (defparameter *scsa-consistency-multiplier* 0.05)
 
 (defparameter *generations-per-guess* 50)
+(defparameter *max-responses-to-compare* 15)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
 (defparameter *2-point-crossover-rate* 0.5) ; 1-p
@@ -221,6 +222,34 @@
       do (incf generation-counter 1))
     (first most-fit)))
 
+(defun guess-response-pairs (guesses responses)
+  "Return a list of tuples"
+  (mapcar
+    (lambda (guess response) (list guess response))
+    guesses
+    responses))
+
+(defun score-response (response)
+  (+
+    (* (first response) 1.5)
+    (* (second response) 1)))
+
+(defun score-pairs (tuples)
+  (mapcar
+    (lambda (tuple)
+      (list
+        tuple
+        (score-response (second tuple))))
+    tuples))
+
+(defun top-n-guess-response-pairs (guesses responses n)
+  (my-firstn n
+    (sort
+      (score-pairs (guess-response-pairs guesses responses))
+      #'>
+      :key #'second)))
+
+
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors scsa-name last-response)
   ; if first move, reset state and give a guess that includes all the colors
@@ -235,6 +264,13 @@
   (push (firstn 2 last-response) *responses*)
 
   (let*
-    ((guess (most-fit-over-multiple-generations board colors *guesses* *responses* scsa-name)))
+    (
+      (top-guesses-and-responses
+        (mapcar
+          #'first
+          (top-n-guess-response-pairs *guesses* *responses* *max-responses-to-compare*)))
+      (top-guesses (mapcar #'first top-guesses-and-responses))
+      (top-responses (mapcar #'second top-guesses-and-responses))
+      (guess (most-fit-over-multiple-generations board colors top-guesses top-responses scsa-name)))
     (push guess *guesses*)
     guess))

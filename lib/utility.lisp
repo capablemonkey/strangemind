@@ -109,3 +109,8 @@
 
 (defun random-chooser (list)
   (nth (random (length list)) list))
+
+(defun my-firstn (number list)
+  (loop for i from 1 to number
+     for item in list
+     collect item))
