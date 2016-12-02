@@ -20,6 +20,8 @@
     prefer-fewer))
     ; only-once ; WARNING: this SCSA requires the board size to equal the number of colors
 
+(defparameter *scsa-name* 'insert-colors)
+
 (defun random-scsa ()
   (nth (random (length *SCSA-list*)) *SCSA-list*))
 
@@ -31,7 +33,7 @@
     (
       (results ; return values from running tournaments
         (mapcar ; TODO: can we parallelize each tournament?
-          (lambda (_) (measure-time (lambda () (play-tournament *Mastermind* team 'insert-colors 100))))
+          (lambda (_) (measure-time (lambda () (play-tournament *Mastermind* team *scsa-name* 100))))
           (make-list trials)))
       (scores (mapcar (lambda (result) (scoring-function result)) results))
       (games-lost (mapcar #'second results))
@@ -57,6 +59,7 @@
     ; (print results)
     results))
 
+; appends total tournament time to tournament return value
 (defun measure-time (fn)
   (let ((start (get-internal-real-time)))
     (append
@@ -66,9 +69,6 @@
 
 ; Run the tournament 10 times and calculate statistics on performance of team:
 ; (benchmark-tournament 'RandomFolks 10)
-
-; TODO: Benchmark against SCSAs
-; TODO: add timing stats per round
 
 ; keeping colors fixed at 6, benchmark against board size:
 (defun benchmark-pegs (team min-size max-size)
@@ -88,9 +88,6 @@
 (defmacro set-parameter (param value)
   (format t "~%[!] Setting ~a to ~a~%" param value)
   `(defparameter ,param ,value))
-
-; TODO: record average time per game.
-; TODO: can we parallelize this?
 
 ; (benchmark-pegs 'RandomFolks 3 4)
 ; (benchmark-pegs 'Knuth 3 5)

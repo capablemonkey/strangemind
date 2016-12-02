@@ -16,6 +16,8 @@
 (defparameter *default-inversion* 0.03)
 (defparameter *default-permutation* 0.03)
 
+(defparameter *scsa-name* 'insert-colors)
+
 (print "Base case")
 (defparameter *population-size* *default-population*)
 (defparameter *generations-per-guess* *default-generations*)
