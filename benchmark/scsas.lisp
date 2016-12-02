@@ -12,25 +12,17 @@
 
 (defparameter *scsa-consistency-multiplier* 0.25)
 
-(set-parameter *scsa-name* 'insert-colors)
-(benchmark-tournament 'Genetic 5)
+(defmacro test-scsa (scsa-name)
+  `(progn
+    (set-parameter *scsa-name* ,scsa-name)
+    (Mastermind *pegs* *colors* ,scsa-name)
+    (benchmark-tournament 'Genetic 5)))
 
-(set-parameter *scsa-name* 'two-color)
-(benchmark-tournament 'Genetic 5)
-
-(set-parameter *scsa-name* 'ab-color)
-(benchmark-tournament 'Genetic 5)
-
-(set-parameter *scsa-name* 'two-color-alternating)
-(benchmark-tournament 'Genetic 5)
-
-(set-parameter *scsa-name* 'first-and-last)
-(benchmark-tournament 'Genetic 5)
-
-(set-parameter *scsa-name* 'usually-fewer)
-(benchmark-tournament 'Genetic 5)
-
-(set-parameter *scsa-name* 'prefer-fewer)
-(benchmark-tournament 'Genetic 5)
-
+(test-scsa 'insert-colors)
+(test-scsa 'two-color)
+(test-scsa 'ab-color)
+(test-scsa 'two-color-alternating)
+(test-scsa 'first-and-last)
+(test-scsa 'usually-fewer)
+(test-scsa 'prefer-fewer)
 (quit)
