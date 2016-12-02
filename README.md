@@ -53,3 +53,9 @@ To measure how the team stacks up against different pegs and colors:
 ```
 ccl --load benchmark/pegs-and-colors.lisp
 ```
+
+To test performance against different SCSAs:
+
+```
+ccl --load benchmark/scsas.lisp
+```
