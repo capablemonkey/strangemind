@@ -18,4 +18,4 @@
       for color-count in *color-count-range*
       do
         (Mastermind peg-count color-count nil)
-        (benchmark-tournament 'Genetic 1)))
+        (benchmark-tournament 'Genetic 5)))
