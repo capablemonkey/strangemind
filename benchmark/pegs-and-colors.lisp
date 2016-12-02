@@ -1,7 +1,7 @@
 (load (merge-pathnames "benchmark.lisp" *load-truename*))
 
 (defparameter *peg-count-range* '(4 5 6 7 8 9 10))
-(defparameter *color-count-range* '(6 8 10 12 16 20))
+(defparameter *color-count-range* '(6 8 10 12))
 
 (defparameter *population-size* 200)
 (defparameter *generations-per-guess* 100)
