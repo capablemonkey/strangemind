@@ -8,12 +8,12 @@ We use the Common Lisp style guide: http://lisp-lang.org/style-guide/
 
 ## Getting started
 
+We use Clozure Common Lisp.
+
 The `main.lisp` file loads the provided tournament code in mastermind.lisp and plays a sample simple game.
 
-If you use sbcl do:
-
 ```
-sbcl --load main.lisp
+ccl --load main.lisp
 ```
 
 ## Testing
@@ -37,11 +37,25 @@ Then install prove:
 To run tests, do this from the repo root directory:
 
 ```
-sbcl --noinform --load test/index.lisp --eval '(quit)'
+ccl --noinform --load test/index.lisp --eval '(quit)'
 ```
 
 ## Benchmarking
 
+To benchmark team parameters (like population size, mutation rate, etc.):
+
 ```
-sbcl --load benchmark.lisp
+ccl --load benchmark/team-parameters.lisp
+```
+
+To measure how the team stacks up against different pegs and colors:
+
+```
+ccl --load benchmark/pegs-and-colors.lisp
+```
+
+To test performance against different SCSAs:
+
+```
+ccl --load benchmark/scsas.lisp
 ```

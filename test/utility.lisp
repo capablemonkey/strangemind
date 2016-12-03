@@ -10,6 +10,25 @@
   (is '(A B X D) (set-nth '(A B C D) 2 'X)
     "set-nth works as expected")
 
+  (is
+    10
+    (length
+      (generate-n-unique 10 (lambda () (random 11))))
+    "generate-n-unique returns a list of length n")
+
+  (ok
+    (let ((items (generate-n-unique 10 (lambda () (random 11)))))
+      (equal
+        (length items)
+        (length (remove-duplicates items))))
+    "generate-n-unique returns a list of unique elements")
+
+  (ok
+    (every
+      (lambda (item) (and (< item 11) (numberp item)))
+      (generate-n-unique 10 (lambda () (random 11))))
+    "generate-n-unique uses provided function to generate each item")
+
   (ok
     (let*
       (

@@ -15,35 +15,38 @@
     (length (initial-population 4 '(A B C D E F)))
     "Ensure initial population is of size *population-size*")
 
-  (subtest "Test fitness function"
-    (is
-      3
-      (fitness
-        '(A B C D)
-        *test-colors*
-        '((A A A A) (B B B B) (G G G G))
-        '((1 0) (1 0) (0 0))))
+  (is
+    ; 4 + 4 + 4
+    12
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (1 0) (0 0)))
+    "response-similarity-score should return a correct score")
 
-    (is
-      0
-      (fitness
-        '(F F F F)
-        *test-colors*
-        '((A A A A) (B B B B) (G G G G))
-        '((1 1) (1 1) (1 1)))))
+  (is
+    ; 4 + 3 + 0
+    7
+    (response-similarity-score
+      '(A B C D)
+      *test-colors*
+      '((A A A A) (B B B B) (G G G G))
+      '((1 0) (0 0) (4 0)))
+    "response-similarity-score should return a correct score")
 
   (is
     4
-    (length (reproduce '(A A A A) '(F F F F)))
-    "reproduce returns offspring of the correct length")
+    (length (1-point-crossover '(A A A A) '(F F F F)))
+    "1-point-crossover returns offspring of the correct length")
 
   (ok
-    (let ((child (reproduce '(A B C D) '(E F G H))))
+    (let ((child (1-point-crossover '(A B C D) '(E F G H))))
       (or
         (equal child '(A F G H))
         (equal child '(A B G H))
         (equal child '(A B C H))))
-    "reproduce returns a valid child")
+    "1-point-crossover returns a valid child")
 
   (is
     4
@@ -55,19 +58,13 @@
     (length (mutate-with-chance *test-colors* '(A B C D) 0.50))
     "mutate-with-chance returns an individual of the correct length")
 
-  (is
-    '((A B C))
-    (prune-already-guessed
-      '((A B C) (C C C) (X X X))
-      '((Z Z Z) (C C C) (X X X)))
-    "prune-already-guessed should prune from a population individuals which have already been guessed")
-
   (let
     ; set some values to re-use in our tests:
     (
       (population '((A B C D) (F F F F) (G D F B)))
       (guesses '((A A F D) (B B B B) (F C C C) (A G F B)))
       (responses '((2 0) (1 0) (1 0) (2 1)))
+      (scsa-name 'insert-colors)
       (pop-by-relative-fitness
         '(
           ((A B C D) 0.5)
@@ -76,42 +73,44 @@
 
     (is
       '(
-        ((A B C D) 3)
-        ((F F F F) 1)
-        ((G D F B) 2))
+        ((A B C D) 15)
+        ((F F F F) 12)
+        ((G D F B) 12))
       (population-by-fitness
         population
         *test-colors*
         guesses
-        responses)
+        responses
+        scsa-name)
       "population-fitness maps individuals to their fitness")
 
     (is
-      pop-by-relative-fitness
+      '(
+        ((A B C D) 0.3846154)
+        ((F F F F) 0.30769232)
+        ((G D F B) 0.30769232))
       (population-by-relative-fitness
         population
         *test-colors*
         guesses
-        responses)
+        responses
+        scsa-name)
       "population-by-relative-fitness maps individuals to their fitness relative to the rest of population")
 
     (is
-      '(A B C D)
+      '((A B C D) 15)
       (fittest-individual
         population
         *test-colors*
         guesses
-        responses)
-      "fittest-individual selects the most fit individual")
+        responses
+        scsa-name)
+      "fittest-individual returns the tuple with the most fit individual and its score e.g. ((A B C D) 39)")
 
     (is
-      '(G D F B)
-      (fittest-individual
-        population
-        *test-colors*
-        (append '((A B C D)) guesses)
-        (append '((4 0)) responses))
-      "fittest-individual does not return an already guessed individual")
+      (length population)
+      (length (genetic-algorithm population *test-colors* guesses responses scsa-name))
+      "genetic-algorithm returns a new population of the same size as the input population")
 
     (ok
       (let*
