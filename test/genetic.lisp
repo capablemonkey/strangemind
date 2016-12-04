@@ -53,6 +53,22 @@
 
   (is
     4
+    (length (2-point-crossover '(A B C D) '(E F G H)))
+    "2-point-crossover returns a child that is the same length as parents")
+
+  (ok
+    (let ((child (2-point-crossover '(A A A A) '(B B B B))))
+      (or
+        (equal child '(A B A A))
+        (equal child '(A A B A))
+        (equal child '(A B B A))
+        (equal child '(B A B B))
+        (equal child '(B B A B))
+        (equal child '(B A A B))))
+    "2-point-crossover returns a valid child")
+
+  (is
+    4
     (length (mutate *test-colors* '(A B C D)))
     "mutate returns a mutated individual of the same length")
 
@@ -60,6 +76,38 @@
     4
     (length (mutate-with-chance *test-colors* '(A B C D) 0.50))
     "mutate-with-chance returns an individual of the correct length")
+
+  (is
+    4
+    (length (permutate '(A B C D)))
+    "permutate returns a permutated individual of the same length")
+
+  (is
+    NIL
+    (equal '(A B C D) (permutate '(A B C D)))
+    "permutate shouldn't return the original individual")
+
+  (is
+    4
+    (length (permutate-with-chance '(A B C D) 0.50))
+    "permutate-with-chance returns an individual of the correct length")
+
+  (is
+    4
+    (length (inversion '(A B C D)))
+    "inversion returns an inverted individual of the same length")
+
+  (ok
+    (let ((child (inversion '(A B C D E F))))
+      (or
+        (equal child '(A B C D E F))
+        (equal child '(A B D C E F))
+        (equal child '(A B C E D F))
+        (equal child '(A B E D C F))
+        (equal child '(A D C B E F))
+        (equal child '(A C B D E F))
+        (equal child '(A E D C B F))))
+    "inversion returns a valid individual")
 
   (let
     ; set some values to re-use in our tests:
