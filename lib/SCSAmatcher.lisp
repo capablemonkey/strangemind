@@ -159,8 +159,8 @@
 
 (defun AB-checker-p (guess)
   (if (and (equal (number-of-unique-colors guess) 2)
-	   (member 'A result)
-	   (member 'B result))
+	   (member 'A guess)
+	   (member 'B guess))
       T))
 
 ;;list of alternate 2 colors
