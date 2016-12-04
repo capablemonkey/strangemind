@@ -25,4 +25,5 @@
 (test-scsa 'first-and-last)
 (test-scsa 'usually-fewer)
 (test-scsa 'prefer-fewer)
+(test-scsa 'only-once)
 (quit)
