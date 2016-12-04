@@ -45,7 +45,10 @@
       (or
         (equal child '(A F G H))
         (equal child '(A B G H))
-        (equal child '(A B C H))))
+        (equal child '(A B C H))
+        (equal child '(E B C D))
+        (equal child '(E F C D))
+        (equal child '(E F G D))))
     "1-point-crossover returns a valid child")
 
   (is
@@ -73,9 +76,9 @@
 
     (is
       '(
-        ((A B C D) 15)
-        ((F F F F) 12)
-        ((G D F B) 12))
+        ((A B C D) 15.0)
+        ((F F F F) 12.0)
+        ((G D F B) 12.0))
       (population-by-fitness
         population
         *test-colors*
@@ -98,7 +101,7 @@
       "population-by-relative-fitness maps individuals to their fitness relative to the rest of population")
 
     (is
-      '((A B C D) 15)
+      '((A B C D) 15.0)
       (fittest-individual
         population
         *test-colors*
