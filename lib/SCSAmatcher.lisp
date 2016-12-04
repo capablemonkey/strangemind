@@ -141,7 +141,6 @@
 
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
-; (defparameter result nil)
 
 (defun AB-checker-p (guess colors)
   (let ((result (my-color-counter colors guess)))
@@ -170,7 +169,7 @@
 
 ;;Fewer colors (2 or 3)
 ;;remove duplicates from guess and check length if length is <= 3 then true
-(defun less-than-three-checker-p (guess colors)
+(defun usually-fewer-p (guess colors)
   (let ((result (my-color-counter colors guess))
         (total 0))
       (setf result (sort result #'>))
@@ -210,7 +209,7 @@
      (if (first-last-checker-p code) 1 0))
     (
      (equal scsa-name 'usually-fewer)
-     (if (less-than-three-checker-p code colors) 1 0))
+     (if (usually-fewer-p code colors) 1 0))
     (
      (equal scsa-name 'mystery-1)
      (if (mystery-1-checker-p code) 1 0))
