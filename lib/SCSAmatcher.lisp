@@ -134,7 +134,7 @@
 ;; remove duplicates from guess, if is length 2 then this is true
 (defun 2-color-checker-p (guess colors)
   (let ((result (my-color-counter colors guess)))
-    (sort result #'> )
+    (setf result (sort result #'> ))
     (if (= (+ (aref result 0) (aref result 1)) (length guess)) T)))
 
 ;;list of only AB
@@ -170,7 +170,7 @@
 ;;remove duplicates from guess and check length if lenght is <= 3 then true
 (defun less-than-three-checker-p (guess colors)
   (let ((result (my-color-counter colors guess)))
-      (sort result #'>)
+      (setf result (sort result #'>))
       (if (= (+ (aref result 0) (aref result 1) (aref result 2))
               (length guess))
       T)))
