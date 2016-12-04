@@ -10,7 +10,7 @@
 (defparameter *permutation-rate* 0.01)
 (defparameter *inversion-rate* 0.01)
 
-(defparameter *scsa-consistency-multiplier* 0.25)
+(defparameter *scsa-consistency-multiplier* 0.05)
 
 (defmacro test-scsa (scsa-name)
   `(progn

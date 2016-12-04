@@ -10,7 +10,7 @@
 (defparameter *permutation-rate* 0.03)
 (defparameter *inversion-rate* 0.03)
 (defparameter *fitness-slick-weight* 1)
-(defparameter *scsa-consistency-multiplier* 0.25)
+(defparameter *scsa-consistency-multiplier* 0.05)
 
 (defparameter *generations-per-guess* 50)
 
