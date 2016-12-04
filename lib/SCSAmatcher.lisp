@@ -135,7 +135,9 @@
 (defun 2-color-checker-p (guess colors)
   (let ((result (my-color-counter colors guess)))
     (setf result (sort result #'> ))
-    (if (= (+ (aref result 0) (aref result 1)) (length guess)) T)))
+    (if (= (+ (aref result 0) (aref result 1)) 
+           (length guess)) 
+    T)))
 
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
@@ -156,7 +158,7 @@
 
 ;;a list in which colors appear at most once
 ;;remove duplicates in a guess and see if length changes, if not then true
-(defun at-most-once-checker-p (guess)
+(defun at-most-once-checker-p (guess colors)
   (if (equal (length guess) (length (remove-duplicates guess))) T))
 
 
@@ -167,13 +169,16 @@
 
 
 ;;Fewer colors (2 or 3)
-;;remove duplicates from guess and check length if lenght is <= 3 then true
+;;remove duplicates from guess and check length if length is <= 3 then true
 (defun less-than-three-checker-p (guess colors)
-  (let ((result (my-color-counter colors guess)))
+  (let ((result (my-color-counter colors guess))
+        (total 0))
       (setf result (sort result #'>))
-      (if (= (+ (aref result 0) (aref result 1) (aref result 2))
-              (length guess))
-      T)))
+      (setf total (+ (aref result 0) (aref result 1) (aref result 2)))
+      (if (or (= total 3)
+              (= total 2))
+      0.9
+      0.1)))
 
 ;;makes a list with preference for fewer colors
 ;; 50% chance to have 1 color
@@ -199,7 +204,7 @@
      (if (2-color-alt-checker-p code) 1 0))
     (
      (equal scsa-name 'only-once)
-     (if (at-most-once-checker-p code) 1 0))
+     (if (at-most-once-checker-p code colors) 1 0))
     (
      (equal scsa-name 'first-and-last)
      (if (first-last-checker-p code) 1 0))
