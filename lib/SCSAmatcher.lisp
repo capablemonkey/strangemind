@@ -144,7 +144,9 @@
 
 (defun AB-checker-p (guess colors)
   (let ((result (my-color-counter colors guess)))
-    (if (= (+ (aref result 0) (aref result 1)) (length guess)) T)))
+    (if (= (+ (aref result 0) (aref result 1)) 
+	   (length guess)) 
+	T)))
 
 ;;list of alternate 2 colors
 ;;Use mystery-4 code
