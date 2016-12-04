@@ -43,15 +43,24 @@
       (first-last-checker-p '(E C D F E B))
       "first-last-checker-p returns nil for (E C D F E B)")
 
-  (is t
-      (less-than-three-checker-p '(E C C C E D E))
-      "less-than-three-checker-p returns T for (E C C C E D E)")
 
-  (is nil
-      (less-than-three-checker-p '(E C D F E B))
-      "less-than-three-checker-p returns nil for (E C D F E B)")
-  
 
+  (subtest "Testing score-less-than-three"
+	   (is 0.9
+	       (score-less-than-three '(A C D D C A ))
+	       "score-less-than-three returns 0.9 for (A C D D C A)")
+
+	   (is 0.9
+	       (score-less-than-three '(A C C A))
+	       "score-less-than-three returns 0.9 for (A C C A)")
+
+	   (is 0.1
+	       (score-less-than-three '(A A))
+	       "score-less-than-three returns 0.1 for (A A)")
+
+	   (is 0.1
+	       (score-less-than-three '(A D A F D A G C B G C ))
+	       "score-less-than-three returns 0.1 for (A D A F D A G C B G C )"))
 
   (subtest "Testing score-prefer-fewer"
 	   (is 0.5
@@ -190,13 +199,13 @@
 	       (matches-scsa 'first-and-last '(E A E C F E F))	      
 	       "matches-scsa 'first-and-last '(E A E C F E F) returned 0")
 
-	   (is 1
+	   (is 0.9
 	       (matches-scsa 'usually-fewer '(C E D D E E))
-	       "matches-scsa 'usually-fewer '(C E D D E E) returned 1")
+	       "matches-scsa 'usually-fewer '(C E D D E E) returned 0.9")
 
-	   (is 0
+	   (is 0.1
 	       (matches-scsa 'usually-fewer '(C E B D E E))	      
-	       "matches-scsa 'usually-fewer '(C E B D E E) returned 0")
+	       "matches-scsa 'usually-fewer '(C E B D E E) returned 0.1")
 
 	   (is 0.08
 	       (matches-scsa 'prefer-fewer '(F E A D F E))

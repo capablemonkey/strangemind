@@ -2,8 +2,22 @@
 ;;; SCSA-Matcher
 ;;;
 
+
+;;Given a guess, returns the number of unique colors in guess
+(defun number-of-unique-colors (guess)
+  (loop
+     with counter = 0
+     with my-hash = (make-hash-table)
+     for peg in guess
+     do (if (gethash peg my-hash)
+	    nil
+	    (progn (setf (gethash peg my-hash) counter)
+		   (setf counter (+ counter 1))))
+     finally (return counter)))
+
+
 (defun score-prefer-fewer (code)
-  (let ((number-of-colors (length (remove-duplicates code))))
+  (let ((number-of-colors (number-of-unique-colors code)))
     (cond
       ((= number-of-colors 1) 0.5)
       ((= number-of-colors 2) 0.25)
@@ -14,7 +28,7 @@
       (t 0))))
 
 (defun score-mystery-2 (code)
-  (let ((number-of-colors (length (remove-duplicates code))))
+  (let ((number-of-colors (number-of-unique-colors code)))
     (cond
       ((= number-of-colors 1) 0.45)
       ((= number-of-colors 2) 0.39)
@@ -25,7 +39,7 @@
       (t 0))))
 
 (defun score-mystery-5 (code)
-  (let ((number-of-colors (length (remove-duplicates code))))
+  (let ((number-of-colors (number-of-unique-colors code)))
     (cond
       ((= number-of-colors 1) 0.0)
       ((= number-of-colors 2) 0.06)
@@ -53,8 +67,10 @@
 	  (T (progn (setf (gethash letter my-hash) counter)
 		    (setf counter (+ 1 counter))
 		    (setf local-converted-guess (append local-converted-guess (list (gethash letter my-hash)))))))
-       finally (return local-converted-guess))) 
-	
+     finally (return local-converted-guess)))
+
+
+
 
 ;;Creates the pattern for Mystery-1
 (defun mystery-1-create-pattern (board)
@@ -133,15 +149,19 @@
 ;;2-color list
 ;; remove duplicates from guess, if is length 2 then this is true
 (defun 2-color-checker-p (guess)
-  (if (equal (length (remove-duplicates guess)) 2) T))
+  (if (equal (number-of-unique-colors guess) 2) T))
 
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
-(defparameter result nil)
+;(defun AB-checker-p (colors guess)
+;  (let ((result (my-color-counter colors guess)))
+;    (if (= (+ (aref result 0) (aref result 1)) (length guess)) T)))
 
 (defun AB-checker-p (guess)
-  (progn(setq result (remove-duplicates guess))
-	(if (and (equal (length result) 2) (member 'A result) (member 'B result)) T)))
+  (if (and (equal (number-of-unique-colors guess) 2)
+	   (member 'A result)
+	   (member 'B result))
+      T))
 
 ;;list of alternate 2 colors
 ;;Use mystery-4 code
@@ -155,7 +175,7 @@
 ;;a list in which colors appear at most once
 ;;remove duplicates in a guess and see if length changes, if not then true
 (defun at-most-once-checker-p (guess)
-  (if (equal (length guess) (length (remove-duplicates guess))) T))
+  (if (equal (length guess) (number-of-unique-colors guess)) T))
 
 
 ;;first and last are same
@@ -166,8 +186,12 @@
 
 ;;Fewer colors (2 or 3)
 ;;remove duplicates from guess and check length if lenght is <= 3 then true
-(defun less-than-three-checker-p (guess)
-  (if (<= (length (remove-duplicates guess)) 3) T))
+;(defun less-than-three-checker-p (guess)
+;  (if (<= (number-of-unique-colors guess)) 3) T))
+
+(defun score-less-than-three (guess)
+  (let ((num-of-colors (number-of-unique-colors guess)))
+    (if (or (equal num-of-colors 2) (equal num-of-colors 3)) 0.9 0.1)))
 
 ;;makes a list with preference for fewer colors
 ;; 50% chance to have 1 color
@@ -199,7 +223,7 @@
      (if (first-last-checker-p code) 1 0))
     (
      (equal scsa-name 'usually-fewer)
-     (if (less-than-three-checker-p code) 1 0))
+     (score-less-than-three code))
     (
      (equal scsa-name 'mystery-1)
      (if (mystery-1-checker-p code) 1 0))
