@@ -3,7 +3,7 @@ sudo: required
 
 env:
   matrix:
-    - LISP=sbcl
+    - LISP=ccl
 
 # either use a local install.sh script or install it via curl. Feel
 # free to simplify this section in your own .travis.yml file.
@@ -27,4 +27,4 @@ before_script:
 # determining whether a test suite fails or succeeds.
 script:
   - cl -f benchmark.lisp -e '(cl-user::quit)'
-  - cl -f test/index.lisp
+  - cl -f test/index.lisp -e '(cl-user::quit)'
