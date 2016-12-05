@@ -223,11 +223,8 @@
     (first most-fit)))
 
 (defun guess-response-pairs (guesses responses)
-  "Return a list of tuples"
-  (mapcar
-    (lambda (guess response) (list guess response))
-    guesses
-    responses))
+  "Zips a list of guesses and responses into one list of tuples"
+  (mapcar #'list guesses responses))
 
 (defun score-response (response)
   (+
@@ -243,12 +240,12 @@
     tuples))
 
 (defun top-n-guess-response-pairs (guesses responses n)
-  (my-firstn n
+  (my-firstn
+    n
     (sort
       (score-pairs (guess-response-pairs guesses responses))
       #'>
       :key #'second)))
-
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors scsa-name last-response)
