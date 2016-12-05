@@ -114,3 +114,11 @@
   (loop for i from 1 to number
      for item in list
      collect item))
+
+(defun random-from-1-to (n)
+  "Returns a random number between 1 and n, inclusive"
+  (1+ (random (1- n))))
+
+(defun coin-flip ()
+  "Returns T or NIL at random"
+  (= 0 (random 2)))

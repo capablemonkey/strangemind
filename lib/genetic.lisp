@@ -87,14 +87,6 @@
   "Chooses a individual from the population with a bias for fitness"
   (pick-with-probability population-by-relative-fitness))
 
-(defun random-from-1-to (n)
-  "Returns a random number between 1 and n, inclusive"
-  (1+ (random (1- n))))
-
-(defun coin-flip ()
-  "Returns T or NIL at random"
-  (= 0 (random 2)))
-
 (defun random-range-for (individual)
   "Return a list with 2 random indices in a list. First index is smaller than the second."
   (let
@@ -240,12 +232,14 @@
     tuples))
 
 (defun top-n-guess-response-pairs (guesses responses n)
-  (my-firstn
-    n
-    (sort
-      (score-pairs (guess-response-pairs guesses responses))
-      #'>
-      :key #'second)))
+  (mapcar
+    #'first
+    (my-firstn
+      n
+      (sort
+        (score-pairs (guess-response-pairs guesses responses))
+        #'>
+        :key #'second))))
 
 ; Genetic team.  Interfaces with the game
 (defun Genetic (board colors scsa-name last-response)
@@ -262,10 +256,7 @@
 
   (let*
     (
-      (top-guesses-and-responses
-        (mapcar
-          #'first
-          (top-n-guess-response-pairs *guesses* *responses* *max-responses-to-compare*)))
+      (top-guesses-and-responses (top-n-guess-response-pairs *guesses* *responses* *max-responses-to-compare*))
       (top-guesses (mapcar #'first top-guesses-and-responses))
       (top-responses (mapcar #'second top-guesses-and-responses))
       (guess (most-fit-over-multiple-generations board colors top-guesses top-responses scsa-name)))
