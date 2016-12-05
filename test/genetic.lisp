@@ -57,8 +57,8 @@
 
   (is
     '(
-      (((D D D D) (3 1)) 5.5)
-      (((B B B B) (2 2)) 5.0))
+      ((D D D D) (3 1))
+      ((B B B B) (2 2)))
     (top-n-guess-response-pairs
       '(
         (A A A A)
