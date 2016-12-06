@@ -191,9 +191,9 @@
     (
      (equal scsa-name 'two-color-alternating)
      (if (2-color-alt-checker-p code) 1 0))
-    (
-     (equal scsa-name 'only-once)
-     (if (at-most-once-checker-p code) 1 0))
+    ;(
+     ;(equal scsa-name 'only-once)
+     ;(if (at-most-once-checker-p code) 0 0))
     (
      (equal scsa-name 'first-and-last)
      (if (first-last-checker-p code) 1 0))
