@@ -5,14 +5,14 @@
 (defvar *responses* nil)
 
 ; TODO: scale population size with # of pegs and # of colors
-(defparameter *population-size* 150)
+(defparameter *population-size* 200)
 (defparameter *mutation-rate* 0.01)
 (defparameter *permutation-rate* 0.01)
 (defparameter *inversion-rate* 0.01)
 (defparameter *fitness-slick-weight* 1)
 (defparameter *scsa-consistency-multiplier* 0.05)
 
-(defparameter *generations-per-guess* 50)
+(defparameter *generations-per-guess* 100)
 (defparameter *max-responses-to-compare* 15)
 
 (defparameter *1-point-crossover-rate* 0.5) ; p
