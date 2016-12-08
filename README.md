@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.com/capablemonkey/mastermind.svg?token=565F651SdURFqsqwp3Jy&branch=master)](https://travis-ci.com/capablemonkey/mastermind)
 
-Let's win this.
+StrangeMind is a genetic algorithm based AI player for the game of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)).  It was written in Common Lisp to solve different variations of the Mastermind game for an arbitrary number of pegs and up to 26 different colors.  It is also designed to account for biased codemaking patterns (referred to as SCSAs, or secret code selection algorithms).
+
+Provided tournament code for the course lives in `lib/game.lisp` and `lib/scsa.lisp`.
+
+This repository also includes an implementation of Knuth's algorithm
 
 We use the Common Lisp style guide: http://lisp-lang.org/style-guide/
 
