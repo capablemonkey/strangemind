@@ -132,16 +132,21 @@
 
 ;;2-color list
 ;; remove duplicates from guess, if is length 2 then this is true
-(defun 2-color-checker-p (guess)
-  (if (equal (length (remove-duplicates guess)) 2) T))
+(defun 2-color-checker-p (guess colors)
+  (let ((result (my-color-counter colors guess)))
+    (setf result (sort result #'> ))
+    (if (= (+ (aref result 0) (aref result 1)) 
+           (length guess)) 
+    T)))
 
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
-(defparameter result nil)
 
-(defun AB-checker-p (guess)
-  (progn(setq result (remove-duplicates guess))
-	(if (and (equal (length result) 2) (member 'A result) (member 'B result)) T)))
+(defun AB-checker-p (guess colors)
+  (let ((result (my-color-counter colors guess)))
+    (if (= (+ (aref result 0) (aref result 1)) 
+	   (length guess)) 
+	T)))
 
 ;;list of alternate 2 colors
 ;;Use mystery-4 code
@@ -154,7 +159,7 @@
 
 ;;a list in which colors appear at most once
 ;;remove duplicates in a guess and see if length changes, if not then true
-(defun at-most-once-checker-p (guess)
+(defun at-most-once-checker-p (guess colors)
   (if (equal (length guess) (length (remove-duplicates guess))) T))
 
 
@@ -165,9 +170,16 @@
 
 
 ;;Fewer colors (2 or 3)
-;;remove duplicates from guess and check length if lenght is <= 3 then true
-(defun less-than-three-checker-p (guess)
-  (if (<= (length (remove-duplicates guess)) 3) T))
+;;remove duplicates from guess and check length if length is <= 3 then true
+(defun usually-fewer-p (guess colors)
+  (let ((result (my-color-counter colors guess))
+        (total 0))
+      (setf result (sort result #'>))
+      (setf total (+ (aref result 0) (aref result 1) (aref result 2)))
+      (if (or (= total 3)
+              (= total 2))
+      0.9
+      0.1)))
 
 ;;makes a list with preference for fewer colors
 ;; 50% chance to have 1 color
@@ -177,29 +189,29 @@
 ;; 3% chance to have 5 colors
 ;; 1% chance to have 6 colors
 
-(defun matches-scsa (scsa-name code)
+(defun matches-scsa (scsa-name code colors)
   (cond
     (
       (equal scsa-name 'two-color)
-      (if (2-color-checker-p code) 1 0))
+      (if (2-color-checker-p code colors) 1 0))
     (
       (equal scsa-name 'prefer-fewer)
      (score-prefer-fewer code))
     (
      (equal scsa-name 'ab-color)
-     (if (AB-checker-p code) 1 0))
+     (if (AB-checker-p code colors) 1 0))
     (
      (equal scsa-name 'two-color-alternating)
      (if (2-color-alt-checker-p code) 1 0))
     (
      (equal scsa-name 'only-once)
-     (if (at-most-once-checker-p code) 1 0))
+     (if (at-most-once-checker-p code colors) 1 0))
     (
      (equal scsa-name 'first-and-last)
      (if (first-last-checker-p code) 1 0))
     (
      (equal scsa-name 'usually-fewer)
-     (if (less-than-three-checker-p code) 1 0))
+     (if (usually-fewer-p code colors) 1 0))
     (
      (equal scsa-name 'mystery-1)
      (if (mystery-1-checker-p code) 1 0))

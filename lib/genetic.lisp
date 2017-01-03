@@ -40,9 +40,9 @@
     for score = (- slick diff-cows diff-bulls)
     sum score))
 
-(defun scsa-consistency-score (scsa-name individual number-of-guesses)
+(defun scsa-consistency-score (scsa-name individual number-of-guesses colors)
   (*
-    (matches-scsa scsa-name individual)
+    (matches-scsa scsa-name individual colors)
     (length individual)
     number-of-guesses
     *scsa-consistency-multiplier*))
@@ -51,7 +51,7 @@
   "Determines fitness of individual based on how consistent it is with past guesses and responses"
   (+
     (response-similarity-score individual colors guesses responses)
-    (scsa-consistency-score scsa-name individual (length guesses))))
+    (scsa-consistency-score scsa-name individual (length guesses) colors)))
 
 (defun population-by-fitness (population colors guesses responses scsa-name)
   (mapcar
