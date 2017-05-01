@@ -1,3 +1,4 @@
+
 ;;;
 ;;; SCSA-Matcher
 ;;;
@@ -96,9 +97,11 @@
 
 
 (defun mystery-3-checker-p (guess)
-  (let ((colors-in-guess nil) (sorted-count nil))
-    (if (equal (length (remove-duplicates guess)) 3)
-      (progn (setq colors-in-guess (remove-duplicates guess))
+  (let ((colors-in-guess nil) 
+        (sorted-count nil)
+        (temp-guess (remove-duplicates guess)))
+    (if (equal (length temp-guess) 3)
+      (progn (setq colors-in-guess temp-guess)
 	     (setq sorted-count (sort (list
 				       (count (first colors-in-guess) guess)
 				       (count (second colors-in-guess) guess)
@@ -130,18 +133,40 @@
     (setf converted-guess (convert-guess guess))
     (if (equal mystery-4-pattern converted-guess) T)))
 
+(defun colors-present (colors guess number)
+  (let ((seen nil)
+        (num-of-colors 0))
+    (loop for peg in guess
+      if (not (member peg seen))
+        do (progn 
+          (append seen (list peg))
+          (incf num-of-colors))
+          (if (> num-of-colors number)
+            (return-from colors-present num-of-colors)))
+    num-of-colors))
+
 ;;2-color list
 ;; remove duplicates from guess, if is length 2 then this is true
-(defun 2-color-checker-p (guess)
-  (if (equal (length (remove-duplicates guess)) 2) T))
+(defun 2-color-checker-p (guess colors)
+  ; ORIGINAL
+  ; (if (equal (length (remove-duplicates guess)) 2) T))
+
+  ; MEMBER ALGO
+  (let ((result (colors-present colors guess 2)))
+    (if (= result 2) t)))
+
+  ; SORT ALGO
+  #|| (let ((result (my-color-counter colors guess)))
+    (sort result #'< )
+    (if (= (+ (aref result 0) (aref result 1)) (length guess)) T))) ||#
 
 ;;list of only AB
 ;; remove duplicates from guess if the list is length 2 and only has A and B this is true
-(defparameter result nil)
+; (defparameter result nil)
 
-(defun AB-checker-p (guess)
-  (progn(setq result (remove-duplicates guess))
-	(if (and (equal (length result) 2) (member 'A result) (member 'B result)) T)))
+(defun AB-checker-p (colors guess)
+  (let ((result (my-color-counter colors guess)))
+    (if (= (+ (aref result 0) (aref result 1)) (length guess)) T)))
 
 ;;list of alternate 2 colors
 ;;Use mystery-4 code
@@ -165,9 +190,21 @@
 
 
 ;;Fewer colors (2 or 3)
-;;remove duplicates from guess and check length if lenght is <= 3 then true
-(defun less-than-three-checker-p (guess)
-  (if (<= (length (remove-duplicates guess)) 3) T))
+;;remove duplicates from guess and check length if length is <= 3 then true
+(defun less-than-three-checker-p (guess colors)
+  ; ORIGINAL
+  ; (if (<= (length (remove-duplicates guess)) 3) T))
+
+  ; MEMBER ALGO
+  (let ((result (colors-present colors guess 3)))
+    (if (<= result 3) t)))
+
+; SORT ALGO
+#|| (let ((result (my-color-counter colors guess)))
+      (sort result #'<)
+      (if (= (+ (aref result 0) (aref result 1) (aref result 2))
+              (length guess))
+      T))) ||#
 
 ;;makes a list with preference for fewer colors
 ;; 50% chance to have 1 color
@@ -177,17 +214,17 @@
 ;; 3% chance to have 5 colors
 ;; 1% chance to have 6 colors
 
-(defun matches-scsa (scsa-name code)
+(defun matches-scsa (scsa-name code colors)
   (cond
     (
       (equal scsa-name 'two-color)
-      (if (2-color-checker-p code) 1 0))
+      (if (2-color-checker-p code colors) 1 0))
     (
       (equal scsa-name 'prefer-fewer)
      (score-prefer-fewer code))
     (
      (equal scsa-name 'ab-color)
-     (if (AB-checker-p code) 1 0))
+     (if (AB-checker-p colors code) 1 0))
     (
      (equal scsa-name 'two-color-alternating)
      (if (2-color-alt-checker-p code) 1 0))
@@ -199,7 +236,7 @@
      (if (first-last-checker-p code) 1 0))
     (
      (equal scsa-name 'usually-fewer)
-     (if (less-than-three-checker-p code) 1 0))
+     (if (less-than-three-checker-p code colors) 1 0))
     (
      (equal scsa-name 'mystery-1)
      (if (mystery-1-checker-p code) 1 0))
